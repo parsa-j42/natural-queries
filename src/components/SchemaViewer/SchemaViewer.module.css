@@ -1,0 +1,201 @@
+.schemaViewer {
+    --primary-color: var(--mantine-primary-color-filled);
+    --secondary-color: var(--mantine-color-gray-6);
+    --border-color: var(--mantine-color-gray-3);
+    --hover-bg: var(--mantine-color-gray-0);
+    --active-bg: var(--mantine-color-gray-1);
+}
+
+.modalInner {
+    padding: var(--mantine-spacing-md);
+}
+
+.modalContent {
+    background: var(--mantine-color-gray-0);
+}
+
+.modalHeader {
+    margin-bottom: 0;
+    background: var(--mantine-color-gray-0);
+}
+
+.modalBody {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--mantine-color-gray-0);
+}
+
+.titleIcon {
+    color: var(--mantine-primary-color-filled);
+}
+
+.tabs {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.tabPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding-top: var(--mantine-spacing-md);
+}
+
+.searchInput {
+    margin-bottom: var(--mantine-spacing-md);
+}
+
+.contentPaper {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: var(--mantine-radius-md);
+    background: var(--mantine-color-white);
+    border: 1px solid var(--mantine-color-gray-3);
+}
+
+.scrollArea {
+    height: 100%;
+    padding: var(--mantine-spacing-md);
+}
+
+.treeNode {
+    border: 1px solid var(--mantine-color-gray-3);
+    border-radius: var(--mantine-radius-sm);
+    margin-bottom: var(--mantine-spacing-xs);
+    overflow: hidden;
+    transition: all 200ms var(--mantine-transition-timing-function);
+    background: var(--mantine-color-white);
+}
+
+.treeNode:hover {
+    border-color: var(--mantine-primary-color-light);
+}
+
+.nodeHeader {
+    display: flex;
+    align-items: center;
+    padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+    cursor: pointer;
+    transition: background-color 150ms var(--mantine-transition-timing-function);
+}
+
+.nodeHeader:hover {
+    background: var(--mantine-color-gray-0);
+}
+
+.expandButton {
+    margin-right: var(--mantine-spacing-xs);
+}
+
+.tableName {
+    color: var(--mantine-color-dark-9);
+    font-weight: 600;
+}
+
+.tableStats {
+    opacity: 0.85;
+    transition: opacity 150ms var(--mantine-transition-timing-function);
+}
+
+.treeNode:hover .tableStats {
+    opacity: 1;
+}
+
+.nodeContent {
+    border-top: 1px solid var(--mantine-color-gray-2);
+    background: var(--mantine-color-gray-0);
+}
+
+.fieldRow {
+    padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+    transition: background-color 200ms var(--mantine-transition-timing-function);
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+}
+
+.fieldRow:last-child {
+    border-bottom: none;
+}
+
+.fieldRow:hover {
+    background: var(--mantine-color-gray-1);
+}
+
+.fieldName {
+    color: var(--mantine-color-dark-8);
+    font-weight: 500;
+}
+
+.fieldType {
+    background: var(--mantine-primary-color-light);
+    color: var(--mantine-primary-color-filled);
+    font-size: var(--mantine-font-size-xs);
+}
+
+.keyBadge {
+    font-size: var(--mantine-font-size-xs);
+}
+
+.fieldDescription {
+    color: var(--mantine-color-gray-6);
+    margin-top: var(--mantine-spacing-xs);
+    line-height: 1.4;
+}
+
+/* Dark mode overrides */
+[data-mantine-color-scheme="dark"] .schemaViewer {
+    --border-color: var(--mantine-color-dark-4);
+    --hover-bg: var(--mantine-color-dark-6);
+    --active-bg: var(--mantine-color-dark-7);
+}
+
+[data-mantine-color-scheme="dark"] .modalContent,
+[data-mantine-color-scheme="dark"] .modalHeader,
+[data-mantine-color-scheme="dark"] .modalBody {
+    background: var(--mantine-color-dark-7);
+}
+
+[data-mantine-color-scheme="dark"] .contentPaper {
+    background: var(--mantine-color-dark-6);
+    border-color: var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme="dark"] .treeNode {
+    background: var(--mantine-color-dark-6);
+    border-color: var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme="dark"] .treeNode:hover {
+    border-color: var(--mantine-primary-color-light);
+}
+
+[data-mantine-color-scheme="dark"] .nodeHeader:hover {
+    background: var(--mantine-color-dark-5);
+}
+
+[data-mantine-color-scheme="dark"] .nodeContent {
+    background: var(--mantine-color-dark-7);
+    border-color: var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme="dark"] .fieldRow {
+    border-color: var(--mantine-color-dark-4);
+}
+
+[data-mantine-color-scheme="dark"] .fieldRow:hover {
+    background: var(--mantine-color-dark-5);
+}
+
+[data-mantine-color-scheme="dark"] .tableName,
+[data-mantine-color-scheme="dark"] .fieldName {
+    color: var(--mantine-color-gray-2);
+}
+
+[data-mantine-color-scheme="dark"] .fieldDescription {
+    color: var(--mantine-color-dark-2);
+}

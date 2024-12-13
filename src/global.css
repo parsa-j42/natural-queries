@@ -1,0 +1,13 @@
+/* global.css */
+[data-mantine-color-scheme="light"] {
+    --mantine-background-color: #eceff4;
+}
+
+[data-mantine-color-scheme="dark"] {
+    --mantine-background-color: #2e3440;
+}
+
+/* Apply the background color */
+body {
+    background-color: var(--mantine-background-color);
+}
