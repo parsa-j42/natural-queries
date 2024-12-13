@@ -20,11 +20,33 @@ jobs:
         with:
           node-version: 20
 
-      # Enable corepack for Yarn management
-      - name: Enable Corepack
-        run: corepack enable
+      - name: Setup Yarn directories
+        run: |
+          mkdir -p .yarn/releases
 
-      # This will use the version specified in packageManager field in package.json
+      - name: Install Yarn
+        run: |
+          corepack enable
+          corepack prepare yarn@4.5.1 --activate
+          yarn set version 4.5.1
+
+      - name: Configure Yarn
+        run: |
+          yarn config set nodeLinker node-modules
+          yarn config set enableGlobalCache false
+
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: Cache Yarn dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: yarn-cache-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            yarn-cache-
+
       - name: Install dependencies
         run: yarn install
 
