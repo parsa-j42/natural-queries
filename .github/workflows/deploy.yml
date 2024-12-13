@@ -19,12 +19,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'yarn'
 
+      # Enable corepack for Yarn management
+      - name: Enable Corepack
+        run: corepack enable
+
+      # This will use the version specified in packageManager field in package.json
       - name: Install dependencies
-        run: |
-          yarn set version stable
-          yarn install --immutable
+        run: yarn install
 
       - name: Build project
         run: yarn build
