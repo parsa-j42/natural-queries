@@ -27,6 +27,9 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Setup 404 page
+        run: cp dist/index.html dist/404.html
+
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v4
         with:
