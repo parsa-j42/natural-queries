@@ -13,7 +13,9 @@
     "eslint": "eslint . --cache",
     "stylelint": "stylelint '**/*.css' --cache",
     "prettier": "prettier --check \"**/*.{ts,tsx}\"",
-    "prettier:write": "prettier --write \"**/*.{ts,tsx}\""
+    "prettier:write": "prettier --write \"**/*.{ts,tsx}\"",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@mantine/core": "^7.14.0",
@@ -42,6 +44,7 @@
     "eslint-config-mantine": "^4.0.3",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.2",
+    "gh-pages": "^6.2.0",
     "identity-obj-proxy": "^3.0.0",
     "postcss": "^8.4.49",
     "postcss-preset-mantine": "^1.17.0",
