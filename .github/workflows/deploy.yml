@@ -19,39 +19,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Setup Yarn directories
-        run: |
-          mkdir -p .yarn/releases
-
-      - name: Install Yarn
-        run: |
-          corepack enable
-          corepack prepare yarn@4.5.1 --activate
-          yarn set version 4.5.1
-
-      - name: Configure Yarn
-        run: |
-          yarn config set nodeLinker node-modules
-          yarn config set enableGlobalCache false
-
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: Cache Yarn dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: yarn-cache-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            yarn-cache-
+          cache: 'npm'
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
       - name: Build project
-        run: yarn build
+        run: npm run build
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v4
