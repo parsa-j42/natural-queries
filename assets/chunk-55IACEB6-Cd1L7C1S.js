@@ -1,0 +1,1 @@
+import{d as a,b1 as o}from"./SchemaViewer-D9z95cpI.js";var d=a((t,e)=>{let n;return e==="sandbox"&&(n=o("#i"+t)),(e==="sandbox"?o(n.nodes()[0].contentDocument.body):o("body")).select(`[id="${t}"]`)},"getDiagramElement");export{d as g};
