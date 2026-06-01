@@ -8,8 +8,22 @@ database. It has two modes:
 
 The frontend is built with [Vite](https://vitejs.dev/), [React](https://react.dev/),
 [TypeScript](https://www.typescriptlang.org/) and [Mantine](https://mantine.dev/).
-Query generation and execution are currently mocked on the client; a real backend
-will replace those calls.
+SQL execution is real: every query runs locally in the browser with DuckDB-WASM
+against Parquet files (no server round-trip). Query *generation* is still mocked on
+the client and will be replaced by the backend `/generate` API.
+
+## Data layer (DuckDB-WASM)
+
+`src/db/duckdb.ts` boots DuckDB-WASM in a Web Worker and registers each table in
+`public/data/*.parquet` as a view of the same name, so queries read like plain SQL
+(`SELECT ... FROM Wells`). Files are fetched lazily over HTTP range requests, so a
+query only pulls the columns and row groups it touches. `runQuery(sql)` returns the
+result columns and rows; `src/db/format.ts` renders the Arrow values (BigInt,
+timestamps, nulls) for display.
+
+The Parquet files are produced by the backend ETL (see
+`natural-queries-backend/etl/README.md`) and are gitignored. To point at a different
+data location, change the base URL in `src/db/duckdb.ts`.
 
 ## Requirements
 

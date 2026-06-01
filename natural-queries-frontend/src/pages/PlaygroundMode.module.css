@@ -110,6 +110,20 @@
   padding: var(--mantine-spacing-md) !important;
 }
 
+.sqlEditor {
+  font-family: var(--mantine-font-family-monospace);
+  font-size: rem(14px);
+  line-height: 1.6;
+  background: light-dark(#f8f9fa, #3b4252);
+  border: 1px solid light-dark(#e5e9f0, #434c5e);
+}
+
+.errorText {
+  font-family: var(--mantine-font-family-monospace);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .explanationPanel {
   background: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
   height: 100%;

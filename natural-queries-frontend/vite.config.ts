@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
@@ -25,5 +25,11 @@ export default defineConfig({
 
   esbuild: {
     logOverride: { 'this-is-undefined-in-esm': 'silent' },
+  },
+
+  // DuckDB-WASM ships its own workers and wasm; pre-bundling it breaks the
+  // worker resolution, so let Vite serve it as-is.
+  optimizeDeps: {
+    exclude: ['@duckdb/duckdb-wasm'],
   },
 });

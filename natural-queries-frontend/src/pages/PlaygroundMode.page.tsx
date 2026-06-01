@@ -1,6 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  IconAlertTriangle,
+  IconBookmark,
+  IconChevronRight,
+  IconCode,
+  IconHistory,
+  IconTable,
+  IconTerminal2,
+} from '@tabler/icons-react';
 import {
   ActionIcon,
+  Alert,
   Button,
   Card,
   Code,
@@ -11,45 +21,32 @@ import {
   Paper,
   ScrollArea,
   Text,
+  Textarea,
   TextInput,
   Title,
   Tooltip,
 } from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
-import {
-  IconBookmark,
-  IconChevronRight,
-  IconCode,
-  IconHistory,
-  IconTable,
-  IconTerminal2,
-} from '@tabler/icons-react';
 import { ResultsColumn, ResultsPanel } from '@/components/Results/ResultsPanel';
 import { useSchemaViewer } from '@/contexts/SchemaContext';
+import { QueryResult, runQuery, warmUp } from '@/db/duckdb';
+import { formatCell } from '@/db/format';
 import { brand } from '@/theme/colors';
 import { useAccentColor } from '@/theme/useAccentColor';
 import SchemaViewer from '../components/SchemaViewer/SchemaViewer';
-import { generateExplanation, generateSQL, getMockResults, recentQueries, WellResult } from './PlaygroundMode.mocks';
+import { generateExplanation, generateSQL, recentQueries } from './PlaygroundMode.mocks';
 import classes from './PlaygroundMode.module.css';
 
-const resultColumns: ResultsColumn<WellResult>[] = [
-  { key: 'Well_ID', header: 'Well ID' },
-  { key: 'Sample_Date', header: 'Sample Date' },
-  { key: 'Value', header: 'Iron Value', render: (row) => `${row.Value} mg/L` },
-  {
-    key: 'location',
-    header: 'Location (Lat, Long)',
-    render: (row) => `${row.Latitude.toFixed(4)}, ${row.Longitude.toFixed(4)}`,
-  },
-];
+type ResultRow = Record<string, unknown>;
 
 export function PlaygroundMode() {
   const { isOpen, openSchema, closeSchema } = useSchemaViewer();
 
   const [naturalQuery, setNaturalQuery] = useState('');
   const [generatedSQL, setGeneratedSQL] = useState('');
-  const [results, setResults] = useState<WellResult[] | null>(null);
+  const [results, setResults] = useState<QueryResult | null>(null);
+  const [queryError, setQueryError] = useState<string | null>(null);
   const [isProcessingNL, setIsProcessingNL] = useState(false);
   const [isExecutingSQL, setIsExecutingSQL] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -57,9 +54,27 @@ export function PlaygroundMode() {
   const accent = useAccentColor();
   const clipboard = useClipboard();
 
+  // Warm up the wasm engine on mount so the first query does not pay for the
+  // download and view setup.
+  useEffect(() => {
+    warmUp();
+  }, []);
+
   // Explanation only depends on the natural-language query, so memoize it instead of
   // recomputing on every render.
   const explanation = useMemo(() => generateExplanation(naturalQuery), [naturalQuery]);
+  const hasExplanation = explanation.reasoning.length > 0;
+
+  // Columns come straight from whatever the query returned, so any SQL renders.
+  const resultColumns = useMemo<ResultsColumn<ResultRow>[]>(
+    () =>
+      (results?.columns ?? []).map((column) => ({
+        key: column.name,
+        header: column.name,
+        render: (row) => formatCell(row[column.name], column.type),
+      })),
+    [results]
+  );
 
   const handleProcessNaturalLanguage = async () => {
     if (!naturalQuery.trim()) {
@@ -73,19 +88,24 @@ export function PlaygroundMode() {
 
     setIsProcessingNL(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      setGeneratedSQL(generateSQL(naturalQuery));
+      await new Promise((resolve) => setTimeout(resolve, 800));
+      const sql = generateSQL(naturalQuery);
+      if (!sql) {
+        notifications.show({
+          title: 'Not wired up yet',
+          message:
+            'Only the iron-content example generates SQL for now. You can still write SQL by hand and run it.',
+          color: 'yellow',
+        });
+        return;
+      }
+      setGeneratedSQL(sql);
       setResults(null);
+      setQueryError(null);
       notifications.show({
         title: 'Query Generated',
         message: 'SQL query is ready to execute',
         color: 'teal',
-      });
-    } catch {
-      notifications.show({
-        title: 'Generation Failed',
-        message: 'Could not generate SQL query',
-        color: 'red',
       });
     } finally {
       setIsProcessingNL(false);
@@ -93,28 +113,32 @@ export function PlaygroundMode() {
   };
 
   const handleExecuteSQL = async () => {
-    if (!generatedSQL) {
+    if (!generatedSQL.trim()) {
       notifications.show({
         title: 'No SQL Query',
-        message: 'Generate a SQL query first',
+        message: 'Write or generate a SQL query first',
         color: 'yellow',
       });
       return;
     }
 
     setIsExecutingSQL(true);
+    setQueryError(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      setResults(getMockResults(naturalQuery));
+      const result = await runQuery(generatedSQL);
+      setResults(result);
       notifications.show({
         title: 'Query Executed',
-        message: 'Results are ready!',
+        message: `${result.rows.length} row${result.rows.length === 1 ? '' : 's'} returned`,
         color: 'teal',
       });
-    } catch {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setResults(null);
+      setQueryError(message);
       notifications.show({
         title: 'Execution Failed',
-        message: 'Could not execute SQL query',
+        message: 'The query could not run. See the editor for details.',
         color: 'red',
       });
     } finally {
@@ -126,6 +150,7 @@ export function PlaygroundMode() {
     setNaturalQuery(natural);
     setGeneratedSQL('');
     setResults(null);
+    setQueryError(null);
   };
 
   const copySQL = () => {
@@ -144,7 +169,11 @@ export function PlaygroundMode() {
 
         <Group gap="xs">
           <Tooltip label="Query History">
-            <ActionIcon variant="light" color={accent} onClick={() => setShowHistory((prev) => !prev)}>
+            <ActionIcon
+              variant="light"
+              color={accent}
+              onClick={() => setShowHistory((prev) => !prev)}
+            >
               <IconHistory size={20} />
             </ActionIcon>
           </Tooltip>
@@ -215,36 +244,56 @@ export function PlaygroundMode() {
           </Button>
         </div>
 
-        <Collapse in={!!generatedSQL}>
-          <div className={classes.sqlContainer}>
-            <Grid>
-              <Grid.Col span={{ base: 12, md: 7 }}>
-                <div className={classes.sqlHeader}>
-                  <Text size="sm" fw={500} c="dimmed">
-                    Generated SQL:
-                  </Text>
-                  <Tooltip label="Copy SQL">
-                    <ActionIcon variant="subtle" color={accent} onClick={copySQL}>
-                      <IconCode size={16} />
-                    </ActionIcon>
-                  </Tooltip>
-                </div>
-                <Code block className={classes.sqlPreview}>
-                  {generatedSQL}
-                </Code>
-                <Button
+        <div className={classes.sqlContainer}>
+          <Grid>
+            <Grid.Col span={{ base: 12, md: hasExplanation ? 7 : 12 }}>
+              <div className={classes.sqlHeader}>
+                <Text size="sm" fw={500} c="dimmed">
+                  SQL query (editable):
+                </Text>
+                <Tooltip label="Copy SQL">
+                  <ActionIcon variant="subtle" color={accent} onClick={copySQL}>
+                    <IconCode size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </div>
+              <Textarea
+                value={generatedSQL}
+                onChange={(event) => setGeneratedSQL(event.currentTarget.value)}
+                placeholder="Write SQL here, or generate it from a question above. Example: SELECT count(*) FROM Wells;"
+                autosize
+                minRows={6}
+                maxRows={16}
+                spellCheck={false}
+                classNames={{ input: classes.sqlEditor }}
+              />
+              {queryError && (
+                <Alert
+                  mt="sm"
+                  color="red"
                   variant="light"
-                  color={accent}
-                  size="sm"
-                  mt="md"
-                  loading={isExecutingSQL}
-                  onClick={handleExecuteSQL}
-                  fullWidth
+                  icon={<IconAlertTriangle size={16} />}
+                  title="Query error"
                 >
-                  Execute SQL Query
-                </Button>
-              </Grid.Col>
+                  <Text size="sm" className={classes.errorText}>
+                    {queryError}
+                  </Text>
+                </Alert>
+              )}
+              <Button
+                variant="light"
+                color={accent}
+                size="sm"
+                mt="md"
+                loading={isExecutingSQL}
+                onClick={handleExecuteSQL}
+                fullWidth
+              >
+                Execute SQL Query
+              </Button>
+            </Grid.Col>
 
+            {hasExplanation && (
               <Grid.Col span={{ base: 12, md: 5 }}>
                 <ScrollArea className={classes.explanationScroll} scrollbarSize={6}>
                   <Text size="sm" fw={500} mb="xs">
@@ -282,30 +331,31 @@ export function PlaygroundMode() {
                   </ul>
                 </ScrollArea>
               </Grid.Col>
-            </Grid>
-          </div>
-        </Collapse>
+            )}
+          </Grid>
+        </div>
       </Paper>
 
       <Collapse in={!!results}>
         <Grid gutter="md" mt="md">
           <Grid.Col span={{ base: 12, md: 8 }}>
-            <ResultsPanel rows={results ?? []} columns={resultColumns} />
+            <ResultsPanel rows={results?.rows ?? []} columns={resultColumns} height={420} />
           </Grid.Col>
 
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Card className={classes.explanationPanel} withBorder>
               <Text fw={500} size="sm" mb="md">
-                Query Results Explained
+                Query Results
               </Text>
               <Text size="sm" c="dimmed" mb="md">
-                Found {results?.length} wells with elevated iron content ({'>'}0.3 mg/L) in their chemical
-                analysis from the past year.
+                Returned {results?.rows.length ?? 0} row
+                {results?.rows.length === 1 ? '' : 's'} across {results?.columns.length ?? 0} column
+                {results?.columns.length === 1 ? '' : 's'}.
               </Text>
               <ul className={classes.explanationList}>
-                <li>Iron levels above 0.3 mg/L may indicate water quality concerns</li>
-                <li>Results are ordered by sample date to show most recent first</li>
-                <li>Coordinates can be used for spatial analysis</li>
+                <li>Executed locally in your browser with DuckDB-WASM</li>
+                <li>Only the columns and rows the query needs are fetched</li>
+                <li>Edit the SQL above and run again to explore further</li>
               </ul>
             </Card>
           </Grid.Col>

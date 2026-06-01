@@ -1,16 +1,7 @@
-// Client-side stand-ins for the query backend. These fake the NL-to-SQL generation,
-// the explanation, and the execution results so the UI is demoable. Swap each of these
-// for real API calls once the backend lands.
-
-export interface WellResult {
-  Well_ID: number;
-  Chemical_Analysis_ID: number;
-  Sample_Date: string;
-  Value: number;
-  Element_Name: string;
-  Latitude: number;
-  Longitude: number;
-}
+// Client-side stand-ins for the generation backend. These fake the NL-to-SQL
+// step and its explanation so the Playground is demoable before Phase 3 lands.
+// Execution is real: the SQL below runs in DuckDB-WASM against the actual data.
+// Swap generateSQL/generateExplanation for the /generate API call in Phase 3.
 
 export interface QueryExplanation {
   reasoning: string[];
@@ -25,12 +16,12 @@ export interface RecentQuery {
 
 export const recentQueries: RecentQuery[] = [
   {
-    natural: 'Show me wells with high iron content in the last year',
-    sql: 'SELECT W.Well_ID, CA.Sample_Date, AI.Value FROM Wells W JOIN Chemical_Analysis CA...',
+    natural: 'Show me the wells with the highest iron content',
+    sql: "SELECT w.Well_ID, ai.Value FROM Wells w JOIN Chemical_Analysis ca ... WHERE ai.Element_Symbol = 'FE'",
   },
   {
-    natural: 'Find wells with recent chemical analyses in Calgary',
-    sql: 'SELECT W.Well_ID, CA.Sample_Date FROM Wells W JOIN Chemical_Analysis CA...',
+    natural: 'How many wells are there in each drilling method?',
+    sql: 'SELECT Drilling_Method, count(*) FROM Well_Reports GROUP BY Drilling_Method',
   },
 ];
 
@@ -43,6 +34,9 @@ const EMPTY_EXPLANATION: QueryExplanation = {
 // Only the "iron content" example is wired up for the demo.
 const matchesIronExample = (query: string) => query.toLowerCase().includes('iron content');
 
+// Valid DuckDB SQL over the built views. Iron is stored under the symbol 'FE'
+// (field iron is 'F_FE'). The samples are historical, so this ranks by value
+// rather than filtering on a recent date that would return nothing.
 export function generateSQL(query: string): string {
   if (!matchesIronExample(query)) {
     return '';
@@ -50,22 +44,18 @@ export function generateSQL(query: string): string {
 
   return `
 SELECT
-  W.Well_ID,
-  W.Latitude,
-  W.Longitude,
-  CA.Chemical_Analysis_ID,
-  CA.Sample_Date,
-  AI.Value,
-  AI.Element_Name
-FROM Wells W
-JOIN Chemical_Analysis CA ON W.Well_ID = CA.Well_ID
-JOIN Analysis_Items AI ON CA.Chemical_Analysis_ID = AI.Chemical_Analysis_ID
-WHERE
-  AI.Element_Name = 'Iron'
-  AND AI.Value > 0.3  -- Standard threshold for iron content
-  AND CA.Sample_Date >= DATEADD(year, -1, GETDATE())
-ORDER BY
-  CA.Sample_Date DESC;`.trim();
+  w.Well_ID,
+  w.Latitude,
+  w.Longitude,
+  ca.Sample_Date,
+  ai.Value AS Iron_mg_L
+FROM Wells w
+JOIN Chemical_Analysis ca ON ca.Well_ID = w.Well_ID
+JOIN Analysis_Items ai ON ai.Chemical_Analysis_ID = ca.Chemical_Analysis_ID
+WHERE ai.Element_Symbol = 'FE'
+  AND ai.Value > 0.3            -- 0.3 mg/L is the common iron threshold
+ORDER BY ai.Value DESC
+LIMIT 100;`.trim();
 }
 
 export function generateExplanation(query: string): QueryExplanation {
@@ -75,61 +65,34 @@ export function generateExplanation(query: string): QueryExplanation {
 
   return {
     reasoning: [
-      "We'll need to join three tables to get this information:",
-      '1. Wells table for location data',
-      '2. Chemical_Analysis table for sample dates',
-      '3. Analysis_Items table for iron measurements',
+      "We'll join three tables to get this information:",
+      '1. Wells for location data',
+      '2. Chemical_Analysis for the sample each measurement belongs to',
+      '3. Analysis_Items for the iron measurements themselves',
     ],
     sqlBreakdown: [
       {
-        part: 'SELECT W.Well_ID, W.Latitude, W.Longitude, ...',
+        part: 'SELECT w.Well_ID, w.Latitude, w.Longitude, ...',
         explanation: 'Getting well location and identification data',
       },
       {
-        part: 'JOIN Chemical_Analysis CA ON W.Well_ID = CA.Well_ID',
+        part: 'JOIN Chemical_Analysis ca ON ca.Well_ID = w.Well_ID',
         explanation: 'Connecting wells to their chemical analyses using Well_ID',
       },
       {
-        part: 'JOIN Analysis_Items AI ON CA.Chemical_Analysis_ID = AI.Chemical_Analysis_ID',
-        explanation: 'Connecting to specific chemical measurements using Chemical_Analysis_ID',
+        part: 'JOIN Analysis_Items ai ON ai.Chemical_Analysis_ID = ca.Chemical_Analysis_ID',
+        explanation: 'Connecting to the individual measurements using Chemical_Analysis_ID',
       },
       {
-        part: "WHERE AI.Element_Name = 'Iron' AND AI.Value > 0.3",
-        explanation: 'Filtering for iron content above the standard threshold (0.3 mg/L)',
+        part: "WHERE ai.Element_Symbol = 'FE' AND ai.Value > 0.3",
+        explanation: 'Filtering for iron measurements above the standard threshold (0.3 mg/L)',
       },
     ],
     concepts: [
       'Multi-table JOIN operations',
-      'Date-based filtering',
-      'Chemical analysis thresholds',
-      'Result ordering by date',
+      'Filtering by element symbol',
+      'Numeric thresholds',
+      'Result ordering and limiting',
     ],
   };
-}
-
-export function getMockResults(query: string): WellResult[] {
-  if (!matchesIronExample(query)) {
-    return [];
-  }
-
-  return [
-    {
-      Well_ID: 1001,
-      Chemical_Analysis_ID: 5001,
-      Sample_Date: '2023-10-15',
-      Value: 0.45,
-      Element_Name: 'Iron',
-      Latitude: 51.0447,
-      Longitude: -114.0719,
-    },
-    {
-      Well_ID: 1002,
-      Chemical_Analysis_ID: 5002,
-      Sample_Date: '2023-09-20',
-      Value: 0.52,
-      Element_Name: 'Iron',
-      Latitude: 51.0544,
-      Longitude: -114.0667,
-    },
-  ];
 }

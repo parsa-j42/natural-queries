@@ -18,10 +18,12 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@duckdb/duckdb-wasm": "1.33.1-dev45.0",
     "@mantine/core": "^7.14.0",
     "@mantine/hooks": "^7.14.0",
     "@mantine/notifications": "^7.14.0",
     "@tabler/icons-react": "^3.22.0",
+    "apache-arrow": "^17.0.0",
     "mermaid": "^11.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
