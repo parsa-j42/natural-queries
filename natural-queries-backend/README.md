@@ -76,8 +76,39 @@ app/
   config.py    settings loaded from env via pydantic-settings
   schema/      typed schema metadata + prompt rendering
   providers/   LLM adapters (google, groq, anthropic), catalog, router
+  retrieval/   choose which tables go in the prompt (whole-schema or keyword)
+  pipeline/    generate -> validate -> repair loop and SQL validation
 tests/         pytest suite
 etl/           Access-to-Parquet build (see etl/README.md)
 ```
 
-Later phases add `pipeline/`, `retrieval/`, and `story/` under `app/`.
+A later phase adds `story/` under `app/`.
+
+## API
+
+| Endpoint | Purpose |
+|---|---|
+| `GET /health` | Liveness probe. |
+| `GET /providers` | List selectable models and the default for the picker. |
+| `POST /generate` | Turn a question into validated SQL plus an explanation. |
+
+`POST /generate` request:
+
+```json
+{ "question": "show me the wells with the highest iron content",
+  "model": "openai/gpt-oss-120b",   // optional, defaults to DEFAULT_MODEL
+  "apiKey": "..." }                  // optional, bring-your-own key for that model
+```
+
+Response:
+
+```json
+{ "sql": "SELECT ...",
+  "explanation": { "reasoning": [...], "sqlBreakdown": [{"part": "...", "explanation": "..."}], "concepts": [...] },
+  "model": "openai/gpt-oss-120b", "provider": "groq", "attempts": 1 }
+```
+
+The SQL is validated server-side (parsed, checked read-only, every table/column
+confirmed against the schema via a DuckDB bind-check) but executed in the
+browser. A `422` means no valid SQL could be produced within the retry budget; a
+`502` means every provider was unreachable.
