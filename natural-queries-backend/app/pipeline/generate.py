@@ -6,6 +6,7 @@ the model try again, bounded by ``max_attempts``. Only SQL that passes
 validation is returned.
 """
 
+from app.cache import LRUCache
 from app.jsonutil import JsonParseError, extract_json_object
 from app.pipeline.models import Explanation, GenerationOutput
 from app.pipeline.prompts import build_system_prompt, repair_prompt
@@ -50,14 +51,31 @@ def _parse_candidate(text: str) -> tuple[str, Explanation]:
     return sql.strip(), explanation
 
 
+_RESULT_CACHE: LRUCache[GenerationOutput] = LRUCache(256)
+
+
+def _cache_key(question: str, model: str | None) -> str:
+    # Normalize whitespace and case so trivially different phrasings of the same
+    # question share a cache entry.
+    return f"{model or 'default'}\n{' '.join(question.split()).lower()}"
+
+
 async def generate_sql(
     question: str,
     *,
     model: str | None = None,
     api_key: str | None = None,
     max_attempts: int = 3,
+    max_tokens: int = 2048,
+    use_cache: bool = False,
     retriever: Retriever | None = None,
 ) -> GenerationOutput:
+    key = _cache_key(question, model)
+    if use_cache:
+        cached = _RESULT_CACHE.get(key)
+        if cached is not None:
+            return cached
+
     retriever = retriever or WholeSchemaRetriever()
     schema_text = render_schema(retriever.select(question))
     system = build_system_prompt(schema_text)
@@ -66,7 +84,9 @@ async def generate_sql(
     last_error = "no attempts were made"
 
     for attempt in range(1, max_attempts + 1):
-        result = await provider_generate(system, messages, model=model, api_key=api_key)
+        result = await provider_generate(
+            system, messages, model=model, api_key=api_key, max_tokens=max_tokens
+        )
 
         try:
             sql, explanation = _parse_candidate(result.text)
@@ -80,13 +100,16 @@ async def generate_sql(
 
         validation = validate_sql(sql)
         if validation.ok:
-            return GenerationOutput(
+            output = GenerationOutput(
                 sql=sql,
                 explanation=explanation,
                 model=result.model,
                 provider=result.provider,
                 attempts=attempt,
             )
+            if use_cache:
+                _RESULT_CACHE.put(key, output)
+            return output
 
         last_error = validation.error or "unknown validation error"
         messages.append(Message(role="assistant", content=result.text))

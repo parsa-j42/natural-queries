@@ -42,6 +42,20 @@ class Settings(BaseSettings):
     # catalog ids. BYO-key-only models are skipped here (no server key to use).
     fallback_models: str = "openai/gpt-oss-120b,llama-3.3-70b-versatile,gemini-3.1-flash-lite"
 
+    # Cap on output tokens per generation, to bound cost and latency.
+    max_output_tokens: int = 2048
+
+    # Cache identical requests (same question/selection and model) so repeats are
+    # instant and free. In-memory, per process.
+    cache_enabled: bool = True
+
+    # Per-IP request budget for the expensive endpoints (/generate, /story).
+    # Requests allowed per minute; 0 disables rate limiting.
+    rate_limit_per_minute: int = 30
+
+    # Logging verbosity for the app logger.
+    log_level: str = "INFO"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

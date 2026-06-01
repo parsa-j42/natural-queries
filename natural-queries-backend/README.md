@@ -44,6 +44,10 @@ Settings load from the environment (or a local `.env`, which is gitignored) via
 | `ANTHROPIC_API_KEY` | Anthropic key (normally empty: Claude is BYO-key) | empty |
 | `DEFAULT_MODEL` | Catalog id used when a request names no model | `openai/gpt-oss-120b` |
 | `FALLBACK_MODELS` | Comma-separated catalog ids tried when the chosen model errors | see `.env.example` |
+| `MAX_OUTPUT_TOKENS` | Cap on output tokens per generation | `2048` |
+| `CACHE_ENABLED` | Cache identical requests in memory | `true` |
+| `RATE_LIMIT_PER_MINUTE` | Per-IP requests/min for `/generate` and `/story` (0 disables) | `30` |
+| `LOG_LEVEL` | App log verbosity | `INFO` |
 
 ## Providers and models
 
@@ -59,6 +63,21 @@ server key and the schema prompt is cached on Anthropic's side to cut cost.
 To add, remove, or correct a model (including fixing an API model id), edit
 `app/providers/catalog.py`. Defaults and selection rationale are in
 `ROADMAP.md`, Phase 3b.
+
+## Hardening
+
+- **Caching:** identical `/generate` questions (whitespace/case-normalized) and
+  identical `/story` selections are served from an in-memory LRU cache, so repeats
+  are instant and free. Per process; a shared cache would be needed across instances.
+- **Rate limiting:** `/generate` and `/story` are limited per client IP
+  (`RATE_LIMIT_PER_MINUTE`). Over the limit returns `429` with `Retry-After`.
+- **Observability:** every request gets a short id, returned as `X-Request-ID` and
+  logged as one JSON line with method, path, status, duration, and client.
+- **Cost caps:** output tokens are bounded by `MAX_OUTPUT_TOKENS`.
+
+Streaming responses (SSE) are intentionally not implemented yet: they need
+browser-side verification and change the response contract, so they are deferred
+as an enhancement rather than shipped unverified.
 
 ## Development
 

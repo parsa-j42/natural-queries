@@ -24,7 +24,7 @@ def _fake_output() -> GenerationOutput:
 
 
 def test_generate_returns_sql_and_explanation(monkeypatch):
-    async def fake_generate(question, *, model=None, api_key=None):
+    async def fake_generate(question, *, model=None, api_key=None, **kwargs):
         return _fake_output()
 
     monkeypatch.setattr(main, "generate_sql", fake_generate)
@@ -38,7 +38,7 @@ def test_generate_returns_sql_and_explanation(monkeypatch):
 def test_generate_passes_model_and_byo_key(monkeypatch):
     seen = {}
 
-    async def fake_generate(question, *, model=None, api_key=None):
+    async def fake_generate(question, *, model=None, api_key=None, **kwargs):
         seen["model"] = model
         seen["api_key"] = api_key
         return _fake_output()
@@ -58,7 +58,7 @@ def test_empty_question_is_422():
 
 
 def test_generation_failure_is_422(monkeypatch):
-    async def fake_generate(question, *, model=None, api_key=None):
+    async def fake_generate(question, *, model=None, api_key=None, **kwargs):
         raise GenerationFailedError("unknown column: Foo")
 
     monkeypatch.setattr(main, "generate_sql", fake_generate)

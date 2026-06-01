@@ -37,7 +37,9 @@ def _fake_story() -> Story:
 
 
 def test_story_returns_a_lesson(monkeypatch):
-    async def fake_generate(mode, elements, skills, difficulty, *, model=None, api_key=None):
+    async def fake_generate(
+        mode, elements, skills, difficulty, *, model=None, api_key=None, **kwargs
+    ):
         return _fake_story()
 
     monkeypatch.setattr(main, "generate_story", fake_generate)
@@ -62,7 +64,9 @@ def test_missing_selections_is_422():
 
 
 def test_generation_failure_is_422(monkeypatch):
-    async def fake_generate(mode, elements, skills, difficulty, *, model=None, api_key=None):
+    async def fake_generate(
+        mode, elements, skills, difficulty, *, model=None, api_key=None, **kwargs
+    ):
         raise StoryGenerationError(["task \"x\": unknown table"])
 
     monkeypatch.setattr(main, "generate_story", fake_generate)
