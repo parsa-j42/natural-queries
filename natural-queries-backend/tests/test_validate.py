@@ -51,3 +51,33 @@ def test_multiple_statements_are_rejected():
 
 def test_empty_is_rejected():
     assert not validate_sql("   ").ok
+
+
+def test_cte_query_passes():
+    sql = """
+    WITH deep AS (
+      SELECT Well_Report_ID FROM Lithologies WHERE Depth > 100
+    )
+    SELECT count(*) FROM deep
+    """
+    assert validate_sql(sql).ok
+
+
+def test_union_query_passes():
+    sql = """
+    SELECT Well_ID FROM Wells WHERE Meridian = '4'
+    UNION
+    SELECT Well_ID FROM Wells WHERE Meridian = '5'
+    """
+    assert validate_sql(sql).ok
+
+
+def test_subquery_with_unknown_column_is_rejected():
+    sql = "SELECT * FROM (SELECT Bogus_Column FROM Wells) AS t"
+    assert not validate_sql(sql).ok
+
+
+def test_cte_that_writes_is_rejected():
+    # A CTE wrapping an unknown table is still caught.
+    sql = "WITH x AS (SELECT * FROM Aquifers) SELECT * FROM x"
+    assert not validate_sql(sql).ok

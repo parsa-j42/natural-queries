@@ -86,8 +86,11 @@ def validate_sql(sql: str) -> ValidationResult:
         return ValidationResult.failure("only read-only SELECT queries are allowed")
 
     known = {name.lower() for name in get_schema().table_names}
+    # CTE names look like table references but are defined inline, so allow them.
+    cte_names = {cte.alias_or_name.lower() for cte in statement.find_all(exp.CTE)}
     for table in statement.find_all(exp.Table):
-        if table.name and table.name.lower() not in known:
+        name = table.name.lower() if table.name else ""
+        if name and name not in known and name not in cte_names:
             return ValidationResult.failure(f"unknown table: {table.name}")
 
     error = _bind_check(sql)

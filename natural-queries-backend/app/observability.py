@@ -74,7 +74,10 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             raise
 
         duration_ms = round((time.monotonic() - start) * 1000, 1)
-        logger.info(
+        # Health checks fire constantly, so log them at DEBUG to keep INFO clean.
+        level = logging.DEBUG if request.url.path == "/health" else logging.INFO
+        logger.log(
+            level,
             "request",
             extra={
                 "request_id": request_id,

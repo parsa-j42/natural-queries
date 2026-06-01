@@ -19,6 +19,24 @@ DEFAULT_TIMEOUT = httpx.Timeout(60.0, connect=10.0)
 
 _THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
 
+# One shared client, reused across requests so TLS connections are pooled rather
+# than re-established per call. Created lazily and closed on app shutdown.
+_client: httpx.AsyncClient | None = None
+
+
+def get_client() -> httpx.AsyncClient:
+    global _client
+    if _client is None or _client.is_closed:
+        _client = httpx.AsyncClient(timeout=DEFAULT_TIMEOUT)
+    return _client
+
+
+async def close_client() -> None:
+    global _client
+    if _client is not None and not _client.is_closed:
+        await _client.aclose()
+    _client = None
+
 
 class Message(BaseModel):
     role: Literal["user", "assistant"]
@@ -53,8 +71,7 @@ class Provider(ABC):
 async def post_json(provider: str, url: str, *, headers: dict, payload: dict) -> dict:
     """POST JSON and return the parsed body, raising ProviderError on failure."""
     try:
-        async with httpx.AsyncClient(timeout=DEFAULT_TIMEOUT) as client:
-            resp = await client.post(url, headers=headers, json=payload)
+        resp = await get_client().post(url, headers=headers, json=payload)
     except httpx.RequestError as exc:
         raise ProviderError(provider, f"request failed: {exc}") from exc
 

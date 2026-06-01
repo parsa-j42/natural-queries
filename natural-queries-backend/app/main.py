@@ -4,6 +4,7 @@ Wires up the app, middleware (request logging, rate limiting, CORS), and the
 routes: health, provider catalog, SQL generation, and Story mode.
 """
 
+from contextlib import asynccontextmanager
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
@@ -14,6 +15,7 @@ from app.config import get_settings
 from app.observability import RateLimitMiddleware, RequestContextMiddleware, setup_logging
 from app.pipeline import GenerationFailedError, GenerationOutput, generate_sql
 from app.providers import AllProvidersFailedError, ModelInfo, list_models
+from app.providers.base import close_client
 from app.ratelimit import RateLimiter
 from app.story import (
     Difficulty,
@@ -26,7 +28,15 @@ from app.story import (
 settings = get_settings()
 setup_logging(settings.log_level)
 
-app = FastAPI(title=settings.app_name)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    # Release the pooled HTTP connections to the providers on shutdown.
+    await close_client()
+
+
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 
 # The expensive endpoints worth protecting from abuse.
 _RATE_LIMITED_PATHS = {"/generate", "/story"}
