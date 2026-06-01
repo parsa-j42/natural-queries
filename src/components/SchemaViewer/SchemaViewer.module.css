@@ -1,11 +1,3 @@
-.schemaViewer {
-    --primary-color: var(--mantine-primary-color-filled);
-    --secondary-color: var(--mantine-color-gray-6);
-    --border-color: var(--mantine-color-gray-3);
-    --hover-bg: var(--mantine-color-gray-0);
-    --active-bg: var(--mantine-color-gray-1);
-}
-
 .modalInner {
     padding: var(--mantine-spacing-md);
 }
@@ -148,12 +140,6 @@
 }
 
 /* Dark mode overrides */
-[data-mantine-color-scheme="dark"] .schemaViewer {
-    --border-color: var(--mantine-color-dark-4);
-    --hover-bg: var(--mantine-color-dark-6);
-    --active-bg: var(--mantine-color-dark-7);
-}
-
 [data-mantine-color-scheme="dark"] .modalContent,
 [data-mantine-color-scheme="dark"] .modalHeader,
 [data-mantine-color-scheme="dark"] .modalBody {

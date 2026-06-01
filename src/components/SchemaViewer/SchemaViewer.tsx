@@ -20,6 +20,7 @@ import {
   Tooltip,
   rem,
 } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import { schemaData, TableData } from './schemaData';
 import ERDiagram from './ERDiagram';
 import classes from './SchemaViewer.module.css';
@@ -117,7 +118,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ name, data, level = 0, expanded, on
         onClick={() => isExpandable && onToggle(name)}
         onKeyDown={handleKeyPress}
       >
-        <Group gap="sm" className="flex-1">
+        <Group gap="sm" style={{ flex: 1 }}>
           {isExpandable && (
             <ActionIcon
               variant="subtle"
@@ -127,13 +128,13 @@ const TreeNode: React.FC<TreeNodeProps> = ({ name, data, level = 0, expanded, on
               {expanded[name] ? <IconChevronDown size={18} /> : <IconChevronRight size={18} />}
             </ActionIcon>
           )}
-          <div className="flex-1">
+          <div style={{ flex: 1 }}>
             <Group justify="space-between" align="flex-start">
               <div>
                 <Text size="sm" fw={600} className={classes.tableName}>
                   {name}
                 </Text>
-                <Text size="xs" c="dimmed" className="mt-1">
+                <Text size="xs" c="dimmed" mt={4}>
                   {data.description}
                 </Text>
               </div>
@@ -187,7 +188,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({ name, data, level = 0, expanded, on
               }}
             >
               <Group justify="space-between" align="flex-start">
-                <div className="flex-1">
+                <div style={{ flex: 1 }}>
                   <Group gap="xs" wrap="nowrap">
                     <Text size="sm" fw={500} className={classes.fieldName}>
                       {fieldName}
@@ -227,6 +228,7 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ opened, onClose }) => {
   const [activeTab, setActiveTab] = useState<string>('browser');
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const [searchTerm, setSearchTerm] = useState('');
+  const isMobile = useMediaQuery('(max-width: 48em)');
 
   const toggleNode = useCallback((nodeName: string) => {
     setExpanded((prev) => ({
@@ -239,6 +241,7 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ opened, onClose }) => {
     <Modal
       opened={opened}
       onClose={onClose}
+      fullScreen={isMobile}
       size="90%"
       radius="md"
       padding="lg"
@@ -249,9 +252,8 @@ const SchemaViewer: React.FC<SchemaViewerProps> = ({ opened, onClose }) => {
         body: classes.modalBody,
       }}
       styles={{
-        content: {
-          height: '90vh',
-        },
+        // On phones the modal goes full screen; otherwise cap the height so it scrolls.
+        content: isMobile ? undefined : { height: '90vh' },
       }}
       title={
         <Group>
