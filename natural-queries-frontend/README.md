@@ -9,8 +9,9 @@ database. It has two modes:
 The frontend is built with [Vite](https://vitejs.dev/), [React](https://react.dev/),
 [TypeScript](https://www.typescriptlang.org/) and [Mantine](https://mantine.dev/).
 SQL execution is real: every query runs locally in the browser with DuckDB-WASM
-against Parquet files (no server round-trip). Query *generation* is still mocked on
-the client and will be replaced by the backend `/generate` API.
+against Parquet files (no server round-trip). Query *generation* and Story-mode
+lessons come from the backend (`POST /generate`, `POST /story`); set `VITE_API_URL`
+to point at it (defaults to `http://localhost:8000`).
 
 ## Data layer (DuckDB-WASM)
 
@@ -42,5 +43,29 @@ yarn install
 - `yarn preview` - preview the production build locally
 - `yarn typecheck` - run the TypeScript compiler with no emit
 - `yarn lint` - run ESLint and Stylelint
+- `yarn test` - run the Vitest unit/component suite
+- `yarn test:watch` - Vitest in watch mode
+- `yarn test:e2e` - run the Playwright end-to-end tests
 - `yarn prettier` / `yarn prettier:write` - check / format with Prettier
 - `yarn deploy` - build and publish to GitHub Pages
+
+## Testing
+
+Two layers, because DuckDB-WASM (Web Worker + WASM) does not run in jsdom:
+
+- **Vitest + React Testing Library** for logic and components: `formatCell`, the API
+  client (mocked `fetch`), the grader's feedback branches (DuckDB layer mocked), and
+  the `ResultsPanel` component. Fast, no browser. Run with `yarn test`. The render
+  helper that wraps components in `MantineProvider` lives in `test-utils/`.
+- **Playwright** for the real flows in `e2e/`: the Playground (generate then run) and
+  Story mode (generate then grade). The backend is mocked per-test via request
+  interception, so no API keys are needed; the dev server serves the real Parquet so
+  the in-browser SQL engine runs for real.
+
+The E2E tests need the browser binary and the Parquet data present:
+
+```sh
+npx playwright install chromium     # one-time browser download
+# ensure natural-queries-frontend/public/data/*.parquet exists (from the ETL)
+yarn test:e2e
+```
