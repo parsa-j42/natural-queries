@@ -1,34 +1,32 @@
-# Mantine Vite template
+# Natural Queries
 
-## Features
+Natural Queries turns plain-English questions into SQL against a groundwater well
+database. It has two modes:
 
-This template comes with the following features:
+- **Playground** - type a question, get generated SQL with an explanation, and run it.
+- **Story** - guided, chapter-based lessons that build up SQL skills.
 
-- [PostCSS](https://postcss.org/) with [mantine-postcss-preset](https://mantine.dev/styles/postcss-preset)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Storybook](https://storybook.js.org/)
-- [Vitest](https://vitest.dev/) setup with [React Testing Library](https://testing-library.com/docs/react-testing-library/intro)
-- ESLint setup with [eslint-config-mantine](https://github.com/mantinedev/eslint-config-mantine)
+The frontend is built with [Vite](https://vitejs.dev/), [React](https://react.dev/),
+[TypeScript](https://www.typescriptlang.org/) and [Mantine](https://mantine.dev/).
+Query generation and execution are currently mocked on the client; a real backend
+will replace those calls.
 
-## npm scripts
+## Requirements
 
-## Build and dev scripts
+- Node `24` (see `.nvmrc`)
+- Yarn `4` (Corepack)
 
-- `dev` – start development server
-- `build` – build production version of the app
-- `preview` – locally preview production build
+```sh
+nvm use
+yarn install
+```
 
-### Testing scripts
+## Scripts
 
-- `typecheck` – checks TypeScript types
-- `lint` – runs ESLint
-- `prettier:check` – checks files with Prettier
-- `vitest` – runs vitest tests
-- `vitest:watch` – starts vitest watch
-- `test` – runs `vitest`, `prettier:check`, `lint` and `typecheck` scripts
-
-### Other scripts
-
-- `storybook` – starts storybook dev server
-- `storybook:build` – build production storybook bundle to `storybook-static`
-- `prettier:write` – formats all files with Prettier
+- `yarn dev` - start the dev server
+- `yarn build` - type-check and build for production
+- `yarn preview` - preview the production build locally
+- `yarn typecheck` - run the TypeScript compiler with no emit
+- `yarn lint` - run ESLint and Stylelint
+- `yarn prettier` / `yarn prettier:write` - check / format with Prettier
+- `yarn deploy` - build and publish to GitHub Pages

@@ -23,7 +23,7 @@ const PlaygroundMode = lazy(() => import('./pages/PlaygroundMode.page').then(mod
 const PageLoader = () => (
   <LoadingOverlay
     zIndex={1000}
-    visible={true}
+    visible
     overlayProps={{ radius: 'sm', blur: 2 }}
     loaderProps={{ color: '#8fbcbb', type: 'bars', size: 'lg' }}
   />
