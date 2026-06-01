@@ -39,7 +39,7 @@ export interface ProvidersResponse {
 const API_URL = (import.meta.env.VITE_API_URL ?? 'http://localhost:8000').replace(/\/+$/, '');
 
 // FastAPI puts error messages in a `detail` field. Surface that to the caller
-// so the UI can show why generation failed (bad question, provider down, etc).
+// so the UI can show why a request failed (bad input, provider down, etc).
 async function readError(response: Response): Promise<string> {
   try {
     const body = await response.json();
@@ -52,12 +52,28 @@ async function readError(response: Response): Promise<string> {
   return `${response.status} ${response.statusText}`;
 }
 
-export async function fetchProviders(): Promise<ProvidersResponse> {
-  const response = await fetch(`${API_URL}/providers`);
+export async function getJSON<T>(path: string): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`);
   if (!response.ok) {
     throw new Error(await readError(response));
   }
   return response.json();
+}
+
+export async function postJSON<T>(path: string, body: unknown): Promise<T> {
+  const response = await fetch(`${API_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!response.ok) {
+    throw new Error(await readError(response));
+  }
+  return response.json();
+}
+
+export function fetchProviders(): Promise<ProvidersResponse> {
+  return getJSON<ProvidersResponse>('/providers');
 }
 
 export interface GenerateParams {
@@ -66,18 +82,6 @@ export interface GenerateParams {
   apiKey?: string;
 }
 
-export async function generateQuery({
-  question,
-  model,
-  apiKey,
-}: GenerateParams): Promise<GenerateResponse> {
-  const response = await fetch(`${API_URL}/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question, model, apiKey }),
-  });
-  if (!response.ok) {
-    throw new Error(await readError(response));
-  }
-  return response.json();
+export function generateQuery({ question, model, apiKey }: GenerateParams): Promise<GenerateResponse> {
+  return postJSON<GenerateResponse>('/generate', { question, model, apiKey });
 }

@@ -1,3 +1,5 @@
+import { postJSON } from './client';
+
 // Core Types
 export type Difficulty = 'beginner' | 'intermediate' | 'advanced';
 
@@ -100,74 +102,45 @@ export const sqlSkills = [
   difficulty: 'beginner' as Difficulty,
 }));
 
-// Story generators. These are stubs that always return the beginner scenario today.
-// The real backend will use the selections (elements/skills/difficulty) to pick or
-// generate a story, -> the underscore-prefixed params we don't read yet.
-export async function generateSingleStory(
-  _elements: string[],
-  _skills: string[],
-  _difficulty: Difficulty
+// Story generators. These call the backend (POST /story), which builds the
+// lesson from the selections and validates every solution as runnable SQL.
+// Answer checking is no longer string-based: the browser executes the student's
+// query and the reference solution and compares results (see src/db/grade.ts).
+export interface StoryOptions {
+  model?: string;
+  apiKey?: string;
+}
+
+export function generateSingleStory(
+  elements: string[],
+  skills: string[],
+  difficulty: Difficulty,
+  options: StoryOptions = {}
 ): Promise<Story> {
-  return (await import('../pages/StoryModeScenarios')).StoryScenarios.singleStories.beginner[0];
+  return postJSON<Story>('/story', {
+    mode: 'single',
+    elements,
+    skills,
+    difficulty,
+    model: options.model,
+    apiKey: options.apiKey,
+  });
 }
 
-export async function generateMultiChapterStory(
-  _elements: string[],
-  _skills: string[],
-  _difficulty: Difficulty
+export function generateMultiChapterStory(
+  elements: string[],
+  skills: string[],
+  difficulty: Difficulty,
+  options: StoryOptions = {}
 ): Promise<MultiChapterStory> {
-  return (await import('../pages/StoryModeScenarios')).StoryScenarios.multiChapterStories
-    .beginner[0] as MultiChapterStory;
-}
-
-export function validateQuery(query: string, solution: string): { isValid: boolean; feedback: string } {
-  const normalizeSQL = (sql: string) => {
-    return sql.toLowerCase()
-      .replace(/\s+/g, ' ')
-      .replace(/\s*([,()])\s*/g, '$1')
-      .trim();
-  };
-
-  const userNormalized = normalizeSQL(query);
-  const solutionNormalized = normalizeSQL(solution);
-
-  // Simple validation: check if main components are present
-  const hasSelect = userNormalized.includes('select');
-  const hasFrom = userNormalized.includes('from');
-  const hasRequiredTables = solution.toLowerCase()
-    .match(/from\s+([a-z_]+)/i)?.[1]
-    ?.split(/[,\s]+/)
-    .every(table => userNormalized.includes(table.toLowerCase()));
-
-  if (!hasSelect || !hasFrom) {
-    return {
-      isValid: false,
-      feedback: 'Make sure your query includes SELECT and FROM clauses.'
-    };
-  }
-
-  if (!hasRequiredTables) {
-    return {
-      isValid: false,
-      feedback: 'Check if you\'re using all the required tables.'
-    };
-  }
-
-  // For prototype, be lenient with exact matching
-  const isExactMatch = userNormalized === solutionNormalized;
-  const isCloseMatch = solution.toLowerCase()
-    .split(/[,\s]+/)
-    .filter(word => word.length > 3)
-    .every(word => userNormalized.includes(word.toLowerCase()));
-
-  return {
-    isValid: isExactMatch || isCloseMatch,
-    feedback: isExactMatch
-      ? 'Perfect! Your query matches the solution exactly.'
-      : isCloseMatch
-        ? 'Good job! Your query includes all the key elements.'
-        : 'Almost there! Try comparing your query with the solution.'
-  };
+  return postJSON<MultiChapterStory>('/story', {
+    mode: 'multi',
+    elements,
+    skills,
+    difficulty,
+    model: options.model,
+    apiKey: options.apiKey,
+  });
 }
 
 export function getRandomSelection(
