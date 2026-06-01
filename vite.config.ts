@@ -6,38 +6,21 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   base: '/',
 
-  // Build optimizations
   build: {
     target: 'esnext',
-    modulePreload: true,
-    cssCodeSplit: true,
     sourcemap: false,
     rollupOptions: {
       output: {
         assetFileNames: 'assets/[name]-[hash][extname]',
         chunkFileNames: 'assets/[name]-[hash].js',
         entryFileNames: 'assets/[name]-[hash].js',
+        // Split the big vendors out of the app chunk for better caching.
         manualChunks: {
-          'mantine': ['@mantine/core', '@mantine/notifications'],
+          mantine: ['@mantine/core', '@mantine/notifications'],
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
         },
       },
     },
-  },
-
-  // Development server optimizations
-  server: {
-    hmr: {
-      overlay: false,
-    },
-    watch: {
-      usePolling: false,
-    },
-  },
-
-  // Dependencies optimization
-  optimizeDeps: {
-    exclude: ['@mantine/core', '@mantine/notifications'],
   },
 
   esbuild: {
