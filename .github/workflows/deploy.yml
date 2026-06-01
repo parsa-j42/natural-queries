@@ -31,7 +31,30 @@ jobs:
         run: npm install
 
       - name: Build project
+        env:
+          # Base URL of the deployed backend. Set a repo Actions variable named
+          # VITE_API_URL (Settings -> Secrets and variables -> Actions -> Variables)
+          # to the Render URL. If unset, the app falls back to localhost.
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
         run: npm run build
+
+      # Pull the Parquet data (gitignored, served as static assets) from a GitHub
+      # Release into the build output. Create it once with:
+      #   gh release create data-v1 natural-queries-frontend/public/data/*.parquet
+      # Tolerant on purpose: if the release is missing the site still deploys,
+      # just without data, so this never breaks the frontend deploy.
+      - name: Fetch Parquet data
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p dist/data
+          gh release download data-v1 \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir dist/data \
+            --pattern '*.parquet' \
+            --clobber \
+            || echo "No data-v1 release found; deploying without data."
 
       - name: Setup 404 page
         run: cp dist/index.html dist/404.html

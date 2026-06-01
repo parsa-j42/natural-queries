@@ -1,0 +1,29 @@
+# Render Blueprint for the FastAPI backend (infrastructure as code).
+# Connect this repo on Render; it reads this file, builds the Dockerfile, and
+# creates the service. Set the secret provider keys in the dashboard (they are
+# marked sync:false so they are never stored in git).
+#
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: natural-queries-api
+    runtime: docker
+    plan: free
+    rootDir: natural-queries-backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      # Origin of the deployed frontend, for CORS. Update if the domain changes.
+      - key: CORS_ORIGINS
+        value: https://naturalqueries.parsaj.dev
+      # Server-held provider keys. Set these in the Render dashboard; Anthropic
+      # (Claude) is bring-your-own-key, so leave it unset unless you want a
+      # server default.
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GOOGLE_API_KEY
+        sync: false
