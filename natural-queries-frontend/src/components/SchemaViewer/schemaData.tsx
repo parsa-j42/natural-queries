@@ -109,7 +109,7 @@ export const schemaData: SchemaData = {
       description: "Information about individual well drillers",
       fields: {
         Driller_ID: { type: "Long Integer", description: "Primary key for drillers" },
-        User_ID: { type: "Text (50)", description: "User system identifier" },
+        User_ID: { type: "GUID", description: "User account GUID (system identifier)" },
         Last_Name: { type: "Text (35)", description: "Driller's last name" },
         First_Name: { type: "Text (25)", description: "Driller's first name" },
         Middle_Initial: { type: "Text (2)", description: "Driller's middle initial" },

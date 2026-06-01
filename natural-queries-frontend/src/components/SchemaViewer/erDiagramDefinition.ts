@@ -107,7 +107,7 @@ erDiagram
 
     Drillers {
         Long_Integer Driller_ID PK
-        Text User_ID
+        GUID User_ID
         Text Last_Name
         Text First_Name
         Boolean Is_Active_Flag
