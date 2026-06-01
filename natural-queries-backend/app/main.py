@@ -4,6 +4,8 @@ Wires up the app, CORS, health check, and the provider catalog. The generation
 and story routes are added in later steps of Phase 3 and Phase 4.
 """
 
+from typing import Literal
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, ConfigDict, Field
@@ -11,6 +13,13 @@ from pydantic import BaseModel, ConfigDict, Field
 from app.config import get_settings
 from app.pipeline import GenerationFailedError, GenerationOutput, generate_sql
 from app.providers import AllProvidersFailedError, ModelInfo, list_models
+from app.story import (
+    Difficulty,
+    MultiChapterStory,
+    Story,
+    StoryGenerationError,
+    generate_story,
+)
 
 settings = get_settings()
 
@@ -71,6 +80,41 @@ async def generate(request: GenerateRequest) -> GenerationOutput:
     try:
         return await generate_sql(question, model=request.model, api_key=request.api_key)
     except GenerationFailedError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except AllProvidersFailedError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+class StoryRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True, protected_namespaces=())
+
+    mode: Literal["single", "multi"] = "single"
+    elements: list[str]
+    skills: list[str]
+    difficulty: Difficulty = "beginner"
+    model: str | None = None
+    api_key: str | None = Field(default=None, alias="apiKey")
+
+
+@app.post("/story")
+async def story(request: StoryRequest) -> Story | MultiChapterStory:
+    """Generate a Story-mode lesson whose solutions are validated, runnable SQL.
+
+    Returns a single adventure or a multi-chapter saga depending on ``mode``.
+    """
+    if not request.elements or not request.skills:
+        raise HTTPException(status_code=422, detail="select at least one element and one skill")
+
+    try:
+        return await generate_story(
+            request.mode,
+            request.elements,
+            request.skills,
+            request.difficulty,
+            model=request.model,
+            api_key=request.api_key,
+        )
+    except StoryGenerationError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
     except AllProvidersFailedError as exc:
         raise HTTPException(status_code=502, detail=str(exc)) from exc

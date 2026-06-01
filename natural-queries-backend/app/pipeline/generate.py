@@ -6,9 +6,7 @@ the model try again, bounded by ``max_attempts``. Only SQL that passes
 validation is returned.
 """
 
-import json
-import re
-
+from app.jsonutil import JsonParseError, extract_json_object
 from app.pipeline.models import Explanation, GenerationOutput
 from app.pipeline.prompts import build_system_prompt, repair_prompt
 from app.pipeline.validate import validate_sql
@@ -16,8 +14,6 @@ from app.providers import Message
 from app.providers import generate as provider_generate
 from app.retrieval import Retriever, WholeSchemaRetriever
 from app.schema import render_schema
-
-_FENCE_RE = re.compile(r"^```[a-zA-Z]*\n?|\n?```$")
 
 
 class ParseError(ValueError):
@@ -32,19 +28,11 @@ class GenerationFailedError(RuntimeError):
         super().__init__(f"could not generate valid SQL: {last_error}")
 
 
-def _extract_json(text: str) -> str:
-    text = _FENCE_RE.sub("", text.strip()).strip()
-    start, end = text.find("{"), text.rfind("}")
-    if start == -1 or end == -1 or end < start:
-        raise ParseError("no JSON object found in the reply")
-    return text[start : end + 1]
-
-
 def _parse_candidate(text: str) -> tuple[str, Explanation]:
     try:
-        data = json.loads(_extract_json(text))
-    except json.JSONDecodeError as exc:
-        raise ParseError(f"invalid JSON: {exc}") from exc
+        data = extract_json_object(text)
+    except JsonParseError as exc:
+        raise ParseError(str(exc)) from exc
 
     sql = data.get("sql")
     if not isinstance(sql, str) or not sql.strip():

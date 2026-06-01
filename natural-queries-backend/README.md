@@ -78,11 +78,10 @@ app/
   providers/   LLM adapters (google, groq, anthropic), catalog, router
   retrieval/   choose which tables go in the prompt (whole-schema or keyword)
   pipeline/    generate -> validate -> repair loop and SQL validation
+  story/       Story-mode lesson generation, validation, and caching
 tests/         pytest suite
 etl/           Access-to-Parquet build (see etl/README.md)
 ```
-
-A later phase adds `story/` under `app/`.
 
 ## API
 
@@ -91,6 +90,7 @@ A later phase adds `story/` under `app/`.
 | `GET /health` | Liveness probe. |
 | `GET /providers` | List selectable models and the default for the picker. |
 | `POST /generate` | Turn a question into validated SQL plus an explanation. |
+| `POST /story` | Generate a Story-mode lesson (single or multi-chapter). |
 
 `POST /generate` request:
 
@@ -112,3 +112,9 @@ The SQL is validated server-side (parsed, checked read-only, every table/column
 confirmed against the schema via a DuckDB bind-check) but executed in the
 browser. A `422` means no valid SQL could be produced within the retry budget; a
 `502` means every provider was unreachable.
+
+`POST /story` takes `{ mode: "single" | "multi", elements, skills, difficulty,
+model?, apiKey? }` and returns a lesson whose every step `solution` is validated
+the same way (and repaired if needed), so the browser can execute it to grade
+the student. Generated lessons are cached in memory by their selection, so the
+same request returns the same lesson quickly.
