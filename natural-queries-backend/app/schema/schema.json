@@ -1,0 +1,1611 @@
+{
+  "tables": [
+    {
+      "name": "Analysis_Items",
+      "columns": [
+        {
+          "name": "Element_Name",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Element_Symbol",
+          "pg_type": "VARCHAR (10)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (10)",
+          "not_null": false
+        },
+        {
+          "name": "Decimal_Places",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Value",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Chemical_Analysis_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Boreholes",
+      "columns": [
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "BoreHole_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Diameter",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "From",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "To",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Chemical_Analysis",
+      "columns": [
+        {
+          "name": "Chemical_Analysis_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Sample_Number",
+          "pg_type": "VARCHAR (7)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (7)",
+          "not_null": false
+        },
+        {
+          "name": "Sample_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Analysis_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Laboratory",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Water_Level",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Aquifer",
+          "pg_type": "VARCHAR (20)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (20)",
+          "not_null": false
+        },
+        {
+          "name": "Remarks",
+          "pg_type": "VARCHAR (151)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (151)",
+          "not_null": false
+        },
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Driller_Drilling_Company",
+      "columns": [
+        {
+          "name": "Drilling_Company_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Driller_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Effective_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Is_Active_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        }
+      ]
+    },
+    {
+      "name": "Drillers",
+      "columns": [
+        {
+          "name": "User_ID",
+          "pg_type": "UUID",
+          "duckdb_type": "UUID",
+          "access_type": "GUID",
+          "not_null": false
+        },
+        {
+          "name": "Last_Name",
+          "pg_type": "VARCHAR (35)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (35)",
+          "not_null": false
+        },
+        {
+          "name": "Driller_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Middle_Initial",
+          "pg_type": "VARCHAR (2)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (2)",
+          "not_null": false
+        },
+        {
+          "name": "First_Name",
+          "pg_type": "VARCHAR (25)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (25)",
+          "not_null": false
+        },
+        {
+          "name": "Is_Active_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Journeyman_Number",
+          "pg_type": "VARCHAR (15)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (15)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Drilling_Companies",
+      "columns": [
+        {
+          "name": "Drilling_Company_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Company_Name",
+          "pg_type": "VARCHAR (60)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (60)",
+          "not_null": false
+        },
+        {
+          "name": "Street_Address",
+          "pg_type": "VARCHAR (40)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (40)",
+          "not_null": false
+        },
+        {
+          "name": "City",
+          "pg_type": "VARCHAR (20)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (20)",
+          "not_null": false
+        },
+        {
+          "name": "Province",
+          "pg_type": "VARCHAR (17)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (17)",
+          "not_null": false
+        },
+        {
+          "name": "Country",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Postal_Code",
+          "pg_type": "VARCHAR (7)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (7)",
+          "not_null": false
+        },
+        {
+          "name": "e_Mail",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Is_Active_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Starting_Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Ending_Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Last_Well_ID_Used",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Elements",
+      "columns": [
+        {
+          "name": "Element_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Element_Name",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Element_Symbol",
+          "pg_type": "VARCHAR (10)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (10)",
+          "not_null": false
+        },
+        {
+          "name": "Decimal_Places",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Geophysical_Logs",
+      "columns": [
+        {
+          "name": "Geophysical_Log_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Log_Type",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Log_Taken_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Sent_to_AENV_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        }
+      ]
+    },
+    {
+      "name": "Lithologies",
+      "columns": [
+        {
+          "name": "GIC_Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Water_Bearing",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Colour",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Description",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Material",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Other_Seals",
+      "columns": [
+        {
+          "name": "Other_Seal_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Other_Seal_Type",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "From",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "To",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "At",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Perforations",
+      "columns": [
+        {
+          "name": "Perforation_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "From",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "To",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Diameter",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Interval",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Pump_Test_Items",
+      "columns": [
+        {
+          "name": "Pump_Test_Item_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Pump_Test_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Minutes",
+          "pg_type": "NUMERIC (18, 2)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 2)",
+          "not_null": false
+        },
+        {
+          "name": "Pumping_Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Recovery_Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Pump_Tests",
+      "columns": [
+        {
+          "name": "Pump_Test_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Test_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Start_Time",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Taken_From_Top_of_Casing",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Static_Water_Level",
+          "pg_type": "NUMERIC (18, 2)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 2)",
+          "not_null": false
+        },
+        {
+          "name": "End_Water_Level",
+          "pg_type": "NUMERIC (18, 2)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 2)",
+          "not_null": false
+        },
+        {
+          "name": "Water_Removal_Type",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Water_Removal_Rate",
+          "pg_type": "NUMERIC (18, 2)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 2)",
+          "not_null": false
+        },
+        {
+          "name": "Removal_Depth_From",
+          "pg_type": "NUMERIC (18, 2)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 2)",
+          "not_null": false
+        },
+        {
+          "name": "Reason_for_Short_Test",
+          "pg_type": "VARCHAR (255)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (255)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Screens",
+      "columns": [
+        {
+          "name": "GIC_Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Screen_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "From",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "To",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Slot_Size",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Well_Owners",
+      "columns": [
+        {
+          "name": "Well_Owner_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Owner_Name",
+          "pg_type": "VARCHAR (70)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (70)",
+          "not_null": false
+        },
+        {
+          "name": "PO_Box",
+          "pg_type": "VARCHAR (10)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (10)",
+          "not_null": false
+        },
+        {
+          "name": "Address",
+          "pg_type": "VARCHAR (40)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (40)",
+          "not_null": false
+        },
+        {
+          "name": "City",
+          "pg_type": "VARCHAR (20)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (20)",
+          "not_null": false
+        },
+        {
+          "name": "Postal_Code",
+          "pg_type": "VARCHAR (7)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (7)",
+          "not_null": false
+        },
+        {
+          "name": "Province",
+          "pg_type": "VARCHAR (30)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (30)",
+          "not_null": false
+        },
+        {
+          "name": "Country",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Well_Reports",
+      "columns": [
+        {
+          "name": "Well_Report_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Owner_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Driller_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Drilling_Company_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Driller_Instance_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Date_Received",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Drilling_Method",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Type_of_Work",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Plug_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Plug_Material_Type",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Plug_Material_Amount",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Plugged_Units",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Existing_Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Well_Use",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Other_Well_Use",
+          "pg_type": "VARCHAR (255)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (255)",
+          "not_null": false
+        },
+        {
+          "name": "Total_Depth_Drilled",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Finished_Well_Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Drilling_Start_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Drilling_End_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Casing_Material",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Casing_OD",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Casing_Thickness",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Casing_Bottom",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Liner_Material",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Liner_OD",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Liner_Thickness",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Liner_Top",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Liner_Bottom",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Perforation_By",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Annular_Seal_Material",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Annular_Seal_From",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Annular_Seal_To",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Annular_Seal_Amount",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Annular_Seal_Units",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Screen_Material",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Screen_Size_OD",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Screen_Attachment",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Screen_Top_Fittings",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Screen_Bottom_Fittings",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Pack_Type",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Pack_Grain_Size",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Pack_Amount",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Pack_Units",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Location_Verification_Method",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Distance_Casing_Ground",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Artesian_Flow_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Artesian_Flow_Rate",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Encounter_Saline_Water_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Saline_Water_Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Gas_Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Encounter_Gas_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Remedial_Action",
+          "pg_type": "VARCHAR (255)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (255)",
+          "not_null": false
+        },
+        {
+          "name": "Flow_Control_Installed_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Flow_Control_Description",
+          "pg_type": "VARCHAR (255)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (255)",
+          "not_null": false
+        },
+        {
+          "name": "Recommended_Rate",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Recommended_Intake_Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Pump_Installed_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Pump_Installed_Depth",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Pump_Type_Installed",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Pump_Model",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Pump_Horsepower",
+          "pg_type": "VARCHAR (10)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (10)",
+          "not_null": false
+        },
+        {
+          "name": "Well_Disinfected",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Other_Log",
+          "pg_type": "VARCHAR (255)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (255)",
+          "not_null": false
+        },
+        {
+          "name": "Potability_Sample_Taken_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Potability_Sample_Sent_to_AENV_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Diverted_Water_Source",
+          "pg_type": "VARCHAR (255)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (255)",
+          "not_null": false
+        },
+        {
+          "name": "Diverted_Water_Amount",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Diversion_Date_Time",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "CreatedBy",
+          "pg_type": "UUID",
+          "duckdb_type": "UUID",
+          "access_type": "GUID",
+          "not_null": false
+        },
+        {
+          "name": "IsSubmitted",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Submitted_By",
+          "pg_type": "UUID",
+          "duckdb_type": "UUID",
+          "access_type": "GUID",
+          "not_null": false
+        },
+        {
+          "name": "IsValidated",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Approval_Holder_Signature_Date",
+          "pg_type": "TIMESTAMP WITHOUT TIME ZONE",
+          "duckdb_type": "TIMESTAMP",
+          "access_type": "DateTime",
+          "not_null": false
+        },
+        {
+          "name": "Drilling_Report_Given_To_Owner",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Additional_Comments",
+          "pg_type": "TEXT",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Memo",
+          "not_null": false
+        },
+        {
+          "name": "Model_Output_Rating",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Drilling_Company_Well_ID",
+          "pg_type": "VARCHAR (64)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (64)",
+          "not_null": false
+        }
+      ]
+    },
+    {
+      "name": "Wells",
+      "columns": [
+        {
+          "name": "Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "Drilling_Company_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "GIC_Well_ID",
+          "pg_type": "INTEGER",
+          "duckdb_type": "INTEGER",
+          "access_type": "Long Integer",
+          "not_null": false
+        },
+        {
+          "name": "GOA_Well_Tag_Number",
+          "pg_type": "VARCHAR (7)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (7)",
+          "not_null": false
+        },
+        {
+          "name": "Longitude",
+          "pg_type": "NUMERIC (22, 8)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (22, 8)",
+          "not_null": false
+        },
+        {
+          "name": "Latitude",
+          "pg_type": "NUMERIC (22, 8)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (22, 8)",
+          "not_null": false
+        },
+        {
+          "name": "Elevation",
+          "pg_type": "NUMERIC (22, 8)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (22, 8)",
+          "not_null": false
+        },
+        {
+          "name": "GPS_Obtained",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Elevation_Obtained",
+          "pg_type": "VARCHAR (50)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (50)",
+          "not_null": false
+        },
+        {
+          "name": "Boundary_From",
+          "pg_type": "VARCHAR (20)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (20)",
+          "not_null": false
+        },
+        {
+          "name": "Distance_North",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Distance_South",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Distance_East",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "Distance_West",
+          "pg_type": "NUMERIC (18, 6)",
+          "duckdb_type": "DOUBLE",
+          "access_type": "Numeric (18, 6)",
+          "not_null": false
+        },
+        {
+          "name": "LSD",
+          "pg_type": "VARCHAR (2)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (2)",
+          "not_null": false
+        },
+        {
+          "name": "Section",
+          "pg_type": "VARCHAR (2)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (2)",
+          "not_null": false
+        },
+        {
+          "name": "Township",
+          "pg_type": "VARCHAR (3)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (3)",
+          "not_null": false
+        },
+        {
+          "name": "Range",
+          "pg_type": "VARCHAR (2)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (2)",
+          "not_null": false
+        },
+        {
+          "name": "Meridian",
+          "pg_type": "VARCHAR (1)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (1)",
+          "not_null": false
+        },
+        {
+          "name": "Lot",
+          "pg_type": "VARCHAR (5)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (5)",
+          "not_null": false
+        },
+        {
+          "name": "Plan",
+          "pg_type": "VARCHAR (7)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (7)",
+          "not_null": false
+        },
+        {
+          "name": "Additional_Description",
+          "pg_type": "VARCHAR (255)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (255)",
+          "not_null": false
+        },
+        {
+          "name": "Validated_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Submitted_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Location_Locked_Flag",
+          "pg_type": "BOOLEAN",
+          "duckdb_type": "BOOLEAN",
+          "access_type": "Boolean",
+          "not_null": true
+        },
+        {
+          "name": "Block",
+          "pg_type": "VARCHAR (5)",
+          "duckdb_type": "VARCHAR",
+          "access_type": "Text (5)",
+          "not_null": false
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "parent_table": "Drilling_Companies",
+      "parent_column": "Drilling_Company_ID",
+      "child_table": "Wells",
+      "child_column": "Drilling_Company_ID"
+    },
+    {
+      "parent_table": "Wells",
+      "parent_column": "Well_ID",
+      "child_table": "Well_Reports",
+      "child_column": "Well_ID"
+    },
+    {
+      "parent_table": "Drillers",
+      "parent_column": "Driller_ID",
+      "child_table": "Well_Reports",
+      "child_column": "Driller_ID"
+    },
+    {
+      "parent_table": "Drilling_Companies",
+      "parent_column": "Drilling_Company_ID",
+      "child_table": "Well_Reports",
+      "child_column": "Drilling_Company_ID"
+    },
+    {
+      "parent_table": "Well_Owners",
+      "parent_column": "Well_Owner_ID",
+      "child_table": "Well_Reports",
+      "child_column": "Well_Owner_ID"
+    },
+    {
+      "parent_table": "Well_Reports",
+      "parent_column": "Well_Report_ID",
+      "child_table": "Screens",
+      "child_column": "Well_Report_ID"
+    },
+    {
+      "parent_table": "Well_Reports",
+      "parent_column": "Well_Report_ID",
+      "child_table": "Pump_Tests",
+      "child_column": "Well_Report_ID"
+    },
+    {
+      "parent_table": "Pump_Tests",
+      "parent_column": "Pump_Test_ID",
+      "child_table": "Pump_Test_Items",
+      "child_column": "Pump_Test_ID"
+    },
+    {
+      "parent_table": "Well_Reports",
+      "parent_column": "Well_Report_ID",
+      "child_table": "Perforations",
+      "child_column": "Well_Report_ID"
+    },
+    {
+      "parent_table": "Well_Reports",
+      "parent_column": "Well_Report_ID",
+      "child_table": "Other_Seals",
+      "child_column": "Well_Report_ID"
+    },
+    {
+      "parent_table": "Well_Reports",
+      "parent_column": "Well_Report_ID",
+      "child_table": "Lithologies",
+      "child_column": "Well_Report_ID"
+    },
+    {
+      "parent_table": "Well_Reports",
+      "parent_column": "Well_Report_ID",
+      "child_table": "Geophysical_Logs",
+      "child_column": "Well_Report_ID"
+    },
+    {
+      "parent_table": "Drilling_Companies",
+      "parent_column": "Drilling_Company_ID",
+      "child_table": "Driller_Drilling_Company",
+      "child_column": "Drilling_Company_ID"
+    }
+  ]
+}
