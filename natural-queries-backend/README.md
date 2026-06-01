@@ -79,6 +79,25 @@ Streaming responses (SSE) are intentionally not implemented yet: they need
 browser-side verification and change the response contract, so they are deferred
 as an enhancement rather than shipped unverified.
 
+## Deploying
+
+The service is packaged as a `Dockerfile` and runs on any container host
+(Fly.io, Render, Railway). It is self-contained: the schema ships inside the
+`app` package, so the image does not need the `etl/` tree or the raw data.
+
+```bash
+docker build -t natural-queries-api .
+docker run -p 8000:8000 --env-file .env natural-queries-api
+```
+
+Provide settings as environment variables at deploy time (see `.env.example`);
+never bake secrets into the image. The container respects `$PORT` if the host
+injects one. After deploying, point the frontend's `VITE_API_URL` at the URL and
+set `CORS_ORIGINS` to include the site origin.
+
+`backend-ci.yml` runs ruff and the test suite on every backend change. The tests
+are fully offline (providers are mocked), so CI needs no API keys.
+
 ## Development
 
 ```bash
