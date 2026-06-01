@@ -1,20 +1,21 @@
-import { ActionIcon, Group, useMantineColorScheme } from '@mantine/core';
-import { IconMoon, IconSun } from "@tabler/icons-react";
+import { ActionIcon, useMantineColorScheme } from '@mantine/core';
+import { IconMoon, IconSun } from '@tabler/icons-react';
+import { nord } from '@/theme/colors';
 
 export function ColorSchemeToggle() {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const isLight = colorScheme === 'light';
 
   return (
-    <Group>
-      <ActionIcon
-        onClick={() => toggleColorScheme()}
-        color={colorScheme === "light" ? "#5e81ac" : "#ebcb8b"}
-        variant="subtle"
-        radius="xl"
-        size={36}
-      >
-        {colorScheme === "light" ? <IconMoon size={24} /> : <IconSun size={24} />}
-      </ActionIcon>
-    </Group>
+    <ActionIcon
+      onClick={toggleColorScheme}
+      color={isLight ? nord.frost3 : nord.yellow}
+      variant="subtle"
+      radius="xl"
+      size={36}
+      aria-label={isLight ? 'Switch to dark mode' : 'Switch to light mode'}
+    >
+      {isLight ? <IconMoon size={24} /> : <IconSun size={24} />}
+    </ActionIcon>
   );
 }

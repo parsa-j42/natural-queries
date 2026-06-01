@@ -7,9 +7,16 @@
   @media (max-width: $mantine-breakpoint-md) {
     font-size: rem(50px);
   }
+
+  @media (max-width: $mantine-breakpoint-sm) {
+    font-size: rem(36px);
+    letter-spacing: rem(-1px);
+  }
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   will-change: transform;
   cursor: pointer;

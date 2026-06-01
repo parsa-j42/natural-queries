@@ -1,60 +1,73 @@
-import { Container, Title, SimpleGrid, Card, Text, Button } from '@mantine/core';
+import { Button, Card, Container, List, SimpleGrid, Text, Title } from '@mantine/core';
 import { useNavigate } from 'react-router-dom';
+import { brand } from '@/theme/colors';
 import classes from './Welcome.module.css';
+
+// Landing cards are data-driven so the two modes stay visually consistent.
+const modes = [
+  {
+    to: '/playground',
+    title: 'Playground Mode',
+    color: brand.playground,
+    cardClass: classes.playgroundCard,
+    intro: 'Explore and experiment with:',
+    points: ['Free Exploration', 'Natural Query Interface', 'Real-time Feedback', 'Advanced Features'],
+    cta: 'Start Exploring',
+  },
+  {
+    to: '/story',
+    title: 'Story Mode',
+    color: brand.story,
+    cardClass: classes.storyCard,
+    intro: 'Begin your learning journey with:',
+    points: ['Structured Learning Path', 'Guided Tutorials', 'Progressive Complexity', 'Achievement System'],
+    cta: 'Start Learning',
+  },
+];
 
 export function Welcome() {
   const navigate = useNavigate();
 
   return (
-    <>
-      <Container size="lg" py="xl">
-        <Title order={1} className={classes.title} ta="center" mt={30} mb={80}>
-          Welcome to{' '}
-          <Text inherit variant="gradient" component="span" gradient={{ from: '#a3be8c', to: '#b48ead' }}>
-            Natural Queries
-          </Text>
-        </Title>
+    <Container size="lg" py="xl">
+      <Title
+        order={1}
+        className={classes.title}
+        ta="center"
+        mt={{ base: 8, sm: 30 }}
+        mb={{ base: 40, sm: 80 }}
+      >
+        Welcome to{' '}
+        <Text inherit variant="gradient" component="span" gradient={{ from: brand.playground, to: brand.story }}>
+          Natural Queries
+        </Text>
+      </Title>
 
-        <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
+      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="xl">
+        {modes.map((mode) => (
           <Card
+            key={mode.to}
             shadow="sm"
             padding="lg"
             radius="md"
-            className={`${classes.card} ${classes.playgroundCard}`}
+            className={`${classes.card} ${mode.cardClass}`}
+            onClick={() => navigate(mode.to)}
           >
-            <Title order={2} mb="md" c="#a3be8c">Playground Mode</Title>
-            <Text mb="md">Explore and experiment with:</Text>
-            <ul>
-              <li>Free Exploration</li>
-              <li>Natural Query Interface</li>
-              <li>Real-time Feedback</li>
-              <li>Advanced Features</li>
-            </ul>
-            <Button onClick={() => navigate('/playground')} fullWidth mt="md" radius="md" color="#a3be8c">
-              Start Exploring
+            <Title order={2} mb="md" c={mode.color}>
+              {mode.title}
+            </Title>
+            <Text mb="md">{mode.intro}</Text>
+            <List mb="md">
+              {mode.points.map((point) => (
+                <List.Item key={point}>{point}</List.Item>
+              ))}
+            </List>
+            <Button onClick={() => navigate(mode.to)} fullWidth mt="auto" radius="md" color={mode.color}>
+              {mode.cta}
             </Button>
           </Card>
-
-          <Card
-            shadow="sm"
-            padding="lg"
-            radius="md"
-            className={`${classes.card} ${classes.storyCard}`}
-          >
-            <Title order={2} mb="md" c="#b48ead">Story Mode</Title>
-            <Text mb="md">Begin your learning journey with:</Text>
-            <ul>
-              <li>Structured Learning Path</li>
-              <li>Guided Tutorials</li>
-              <li>Progressive Complexity</li>
-              <li>Achievement System</li>
-            </ul>
-            <Button onClick={() => navigate('/story')} fullWidth mt="md" radius="md" color="#b48ead">
-              Start Learning
-            </Button>
-          </Card>
-        </SimpleGrid>
-      </Container>
-    </>
+        ))}
+      </SimpleGrid>
+    </Container>
   );
 }
