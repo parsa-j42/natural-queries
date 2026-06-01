@@ -1,10 +1,20 @@
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig } from 'vitest/config';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   base: '/',
+
+  // Vitest: component and logic tests in jsdom. The real-browser flows
+  // (DuckDB-WASM) live in Playwright under e2e/, which Vitest must ignore.
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './test-utils/setup.ts',
+    css: false,
+    exclude: ['e2e/**', 'node_modules/**', 'dist/**'],
+  },
 
   build: {
     target: 'esnext',
