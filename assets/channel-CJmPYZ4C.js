@@ -1,1 +1,0 @@
-import{ai as o,aj as n}from"./SchemaViewer-lLObT7NJ.js";const t=(a,r)=>o.lang.round(n.parse(a)[r]);export{t as c};

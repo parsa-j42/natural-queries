@@ -1,0 +1,1 @@
+const e={night1:"#3b4252",snow1:"#e5e9f0",frost3:"#5e81ac",orange:"#d08770",yellow:"#ebcb8b",green:"#a3be8c",purple:"#b48ead"},n={playground:e.green,story:e.purple,accentLight:e.frost3,accentDark:e.orange};export{n as b,e as n};
