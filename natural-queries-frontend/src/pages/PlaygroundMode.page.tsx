@@ -19,7 +19,9 @@ import {
   Grid,
   Group,
   Paper,
+  PasswordInput,
   ScrollArea,
+  Select,
   Text,
   Textarea,
   TextInput,
@@ -28,6 +30,12 @@ import {
 } from '@mantine/core';
 import { useClipboard } from '@mantine/hooks';
 import { notifications } from '@mantine/notifications';
+import {
+  fetchProviders,
+  generateQuery,
+  type ModelInfo,
+  type QueryExplanation,
+} from '@/API/client';
 import { ResultsColumn, ResultsPanel } from '@/components/Results/ResultsPanel';
 import { useSchemaViewer } from '@/contexts/SchemaContext';
 import { QueryResult, runQuery, warmUp } from '@/db/duckdb';
@@ -35,7 +43,7 @@ import { formatCell } from '@/db/format';
 import { brand } from '@/theme/colors';
 import { useAccentColor } from '@/theme/useAccentColor';
 import SchemaViewer from '../components/SchemaViewer/SchemaViewer';
-import { generateExplanation, generateSQL, recentQueries } from './PlaygroundMode.mocks';
+import { recentQueries } from './PlaygroundMode.mocks';
 import classes from './PlaygroundMode.module.css';
 
 type ResultRow = Record<string, unknown>;
@@ -51,19 +59,59 @@ export function PlaygroundMode() {
   const [isExecutingSQL, setIsExecutingSQL] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
 
+  const [explanation, setExplanation] = useState<QueryExplanation | null>(null);
+  const [generationError, setGenerationError] = useState<string | null>(null);
+  const [models, setModels] = useState<ModelInfo[]>([]);
+  const [selectedModel, setSelectedModel] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState('');
+
   const accent = useAccentColor();
   const clipboard = useClipboard();
 
-  // Warm up the wasm engine on mount so the first query does not pay for the
-  // download and view setup.
+  // Warm up the wasm engine on mount, and load the model list so the picker can
+  // default to whatever the backend recommends.
   useEffect(() => {
     warmUp();
+    fetchProviders()
+      .then((data) => {
+        setModels(data.models);
+        setSelectedModel((current) => current ?? data.default);
+      })
+      .catch(() => {
+        notifications.show({
+          title: 'Backend unavailable',
+          message: 'Could not reach the generation service. You can still run SQL by hand.',
+          color: 'yellow',
+        });
+      });
   }, []);
 
-  // Explanation only depends on the natural-language query, so memoize it instead of
-  // recomputing on every render.
-  const explanation = useMemo(() => generateExplanation(naturalQuery), [naturalQuery]);
-  const hasExplanation = explanation.reasoning.length > 0;
+  const selectedModelInfo = useMemo(
+    () => models.find((model) => model.id === selectedModel) ?? null,
+    [models, selectedModel]
+  );
+  const needsKey = selectedModelInfo?.byok_only ?? false;
+  const hasExplanation =
+    !!explanation &&
+    explanation.reasoning.length + explanation.sqlBreakdown.length + explanation.concepts.length >
+      0;
+
+  // Model picker options, grouped by provider.
+  const modelOptions = useMemo(() => {
+    const groupLabels: Record<string, string> = {
+      groq: 'Groq',
+      google: 'Google Gemini',
+      anthropic: 'Anthropic (bring your own key)',
+    };
+    const groups = new Map<string, { value: string; label: string }[]>();
+    for (const model of models) {
+      const group = groupLabels[model.provider] ?? model.provider;
+      const items = groups.get(group) ?? [];
+      items.push({ value: model.id, label: model.label });
+      groups.set(group, items);
+    }
+    return Array.from(groups, ([group, items]) => ({ group, items }));
+  }, [models]);
 
   // Columns come straight from whatever the query returned, so any SQL renders.
   const resultColumns = useMemo<ResultsColumn<ResultRow>[]>(
@@ -86,26 +134,39 @@ export function PlaygroundMode() {
       return;
     }
 
+    if (needsKey && !apiKey.trim()) {
+      notifications.show({
+        title: 'API key required',
+        message: `${selectedModelInfo?.label} needs your own API key. Enter it to continue.`,
+        color: 'yellow',
+      });
+      return;
+    }
+
     setIsProcessingNL(true);
+    setGenerationError(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      const sql = generateSQL(naturalQuery);
-      if (!sql) {
-        notifications.show({
-          title: 'Not wired up yet',
-          message:
-            'Only the iron-content example generates SQL for now. You can still write SQL by hand and run it.',
-          color: 'yellow',
-        });
-        return;
-      }
-      setGeneratedSQL(sql);
+      const result = await generateQuery({
+        question: naturalQuery,
+        model: selectedModel ?? undefined,
+        apiKey: needsKey ? apiKey.trim() : undefined,
+      });
+      setGeneratedSQL(result.sql);
+      setExplanation(result.explanation);
       setResults(null);
       setQueryError(null);
       notifications.show({
         title: 'Query Generated',
-        message: 'SQL query is ready to execute',
+        message: `SQL ready (via ${result.provider}). Review and execute it below.`,
         color: 'teal',
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      setGenerationError(message);
+      notifications.show({
+        title: 'Generation failed',
+        message: 'See the details above the editor.',
+        color: 'red',
       });
     } finally {
       setIsProcessingNL(false);
@@ -151,6 +212,8 @@ export function PlaygroundMode() {
     setGeneratedSQL('');
     setResults(null);
     setQueryError(null);
+    setExplanation(null);
+    setGenerationError(null);
   };
 
   const copySQL = () => {
@@ -244,6 +307,49 @@ export function PlaygroundMode() {
           </Button>
         </div>
 
+        <Group mt="sm" gap="sm" align="flex-end" wrap="wrap">
+          <Select
+            label="Model"
+            data={modelOptions}
+            value={selectedModel}
+            onChange={setSelectedModel}
+            searchable
+            allowDeselect={false}
+            disabled={models.length === 0}
+            size="sm"
+            w={240}
+          />
+          {needsKey && (
+            <PasswordInput
+              label={`${selectedModelInfo?.label} API key`}
+              placeholder="Used only for this request"
+              value={apiKey}
+              onChange={(event) => setApiKey(event.currentTarget.value)}
+              size="sm"
+              w={280}
+            />
+          )}
+          {selectedModelInfo?.notes && (
+            <Text size="xs" c="dimmed" style={{ maxWidth: 360 }}>
+              {selectedModelInfo.notes}
+            </Text>
+          )}
+        </Group>
+
+        {generationError && (
+          <Alert
+            mt="sm"
+            color="red"
+            variant="light"
+            icon={<IconAlertTriangle size={16} />}
+            title="Could not generate SQL"
+          >
+            <Text size="sm" className={classes.errorText}>
+              {generationError}
+            </Text>
+          </Alert>
+        )}
+
         <div className={classes.sqlContainer}>
           <Grid>
             <Grid.Col span={{ base: 12, md: hasExplanation ? 7 : 12 }}>
@@ -293,7 +399,7 @@ export function PlaygroundMode() {
               </Button>
             </Grid.Col>
 
-            {hasExplanation && (
+            {hasExplanation && explanation && (
               <Grid.Col span={{ base: 12, md: 5 }}>
                 <ScrollArea className={classes.explanationScroll} scrollbarSize={6}>
                   <Text size="sm" fw={500} mb="xs">
