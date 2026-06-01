@@ -34,9 +34,21 @@ class Settings(BaseSettings):
     groq_api_key: str = ""
     anthropic_api_key: str = ""
 
+    # Model used when a request does not name one. Must be a non-BYO-key model in
+    # the catalog (app/providers/catalog.py) so it works with the server's keys.
+    default_model: str = "openai/gpt-oss-120b"
+
+    # Ordered fallbacks tried when the chosen model errors out. Comma-separated
+    # catalog ids. BYO-key-only models are skipped here (no server key to use).
+    fallback_models: str = "openai/gpt-oss-120b,llama-3.3-70b-versatile,gemini-3.1-flash-lite"
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]
+
+    @property
+    def fallback_model_list(self) -> list[str]:
+        return [m.strip() for m in self.fallback_models.split(",") if m.strip()]
 
 
 @lru_cache

@@ -39,9 +39,26 @@ Settings load from the environment (or a local `.env`, which is gitignored) via
 |---|---|---|
 | `ENVIRONMENT` | Label surfaced by `/health` | `development` |
 | `CORS_ORIGINS` | Comma-separated browser origins allowed to call the API | prod site + `localhost:5173` |
-| `GOOGLE_API_KEY` | Google AI Studio key (used from Phase 3) | empty |
-| `GROQ_API_KEY` | Groq key (used from Phase 3) | empty |
-| `ANTHROPIC_API_KEY` | Anthropic key (used from Phase 3) | empty |
+| `GOOGLE_API_KEY` | Google AI Studio key (Gemini) | empty |
+| `GROQ_API_KEY` | Groq key | empty |
+| `ANTHROPIC_API_KEY` | Anthropic key (normally empty: Claude is BYO-key) | empty |
+| `DEFAULT_MODEL` | Catalog id used when a request names no model | `openai/gpt-oss-120b` |
+| `FALLBACK_MODELS` | Comma-separated catalog ids tried when the chosen model errors | see `.env.example` |
+
+## Providers and models
+
+The backend can call three providers behind one interface
+(`app/providers/`): Google AI Studio (Gemini), Groq, and Anthropic (Claude).
+`GET /providers` lists the selectable models for the frontend's picker.
+
+Keys are server-held by default. A request may carry its own key (bring your own
+key), which is used only for the model that request explicitly chooses;
+fallbacks always use server keys. Claude is BYO-key only here, so it has no
+server key and the schema prompt is cached on Anthropic's side to cut cost.
+
+To add, remove, or correct a model (including fixing an API model id), edit
+`app/providers/catalog.py`. Defaults and selection rationale are in
+`ROADMAP.md`, Phase 3b.
 
 ## Development
 
@@ -55,10 +72,12 @@ uv run pytest                 # tests
 
 ```
 app/
-  main.py      FastAPI app, CORS, routes
+  main.py      FastAPI app, CORS, routes (/health, /providers)
   config.py    settings loaded from env via pydantic-settings
+  schema/      typed schema metadata + prompt rendering
+  providers/   LLM adapters (google, groq, anthropic), catalog, router
 tests/         pytest suite
+etl/           Access-to-Parquet build (see etl/README.md)
 ```
 
-Future phases add `schema/`, `providers/`, `pipeline/`, `retrieval/`, and
-`story/` under `app/`, plus an `etl/` package for the Access-to-Parquet build.
+Later phases add `pipeline/`, `retrieval/`, and `story/` under `app/`.
