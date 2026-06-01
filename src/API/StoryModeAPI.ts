@@ -100,23 +100,25 @@ export const sqlSkills = [
   difficulty: 'beginner' as Difficulty,
 }));
 
-// Core Functions We're Using
+// Story generators. These are stubs that always return the beginner scenario today.
+// The real backend will use the selections (elements/skills/difficulty) to pick or
+// generate a story, -> the underscore-prefixed params we don't read yet.
 export async function generateSingleStory(
-  elements: string[],
-  skills: string[],
-  difficulty: Difficulty
+  _elements: string[],
+  _skills: string[],
+  _difficulty: Difficulty
 ): Promise<Story> {
-  // For prototype, always return the beginner story from scenarios
   return (await import('../pages/StoryModeScenarios')).StoryScenarios.singleStories.beginner[0];
 }
 
 export async function generateMultiChapterStory(
-  elements: string[],
-  skills: string[],
-  difficulty: Difficulty
+  _elements: string[],
+  _skills: string[],
+  _difficulty: Difficulty
 ): Promise<MultiChapterStory> {
-  // For prototype, always return the beginner story from scenarios
-  return (await import('../pages/StoryModeScenarios')).StoryScenarios.multiChapterStories.beginner[0] as MultiChapterStory;}
+  return (await import('../pages/StoryModeScenarios')).StoryScenarios.multiChapterStories
+    .beginner[0] as MultiChapterStory;
+}
 
 export function validateQuery(query: string, solution: string): { isValid: boolean; feedback: string } {
   const normalizeSQL = (sql: string) => {
