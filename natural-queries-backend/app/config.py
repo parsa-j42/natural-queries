@@ -48,6 +48,11 @@ class Settings(BaseSettings):
     # Reject questions longer than this many characters (bounds prompt size/cost).
     max_question_chars: int = 1000
 
+    # How much schema to put in the generation prompt: "whole" (the full schema,
+    # safe default since it is small) or "keyword" (retrieve only the tables a
+    # question seems to need, cheaper but lossier). See app/retrieval/.
+    retrieval_mode: str = "whole"
+
     # Cache identical requests (same question/selection and model) so repeats are
     # instant and free. In-memory, per process.
     cache_enabled: bool = True

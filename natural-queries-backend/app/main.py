@@ -17,6 +17,7 @@ from app.pipeline import GenerationFailedError, GenerationOutput, generate_sql
 from app.providers import AllProvidersFailedError, ModelInfo, list_models
 from app.providers.base import close_client
 from app.ratelimit import RateLimiter
+from app.retrieval import get_retriever
 from app.story import (
     ALLOWED_ELEMENTS,
     ALLOWED_SKILLS,
@@ -117,6 +118,7 @@ async def generate(request: GenerateRequest) -> GenerationOutput:
             api_key=request.api_key,
             max_tokens=settings.max_output_tokens,
             use_cache=settings.cache_enabled,
+            retriever=get_retriever(settings.retrieval_mode),
         )
     except GenerationFailedError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc

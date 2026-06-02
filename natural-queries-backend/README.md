@@ -64,6 +64,15 @@ To add, remove, or correct a model (including fixing an API model id), edit
 `app/providers/catalog.py`. Defaults and selection rationale are in
 `ROADMAP.md`, Phase 3b.
 
+### Schema retrieval (RAG)
+
+`RETRIEVAL_MODE` controls how much schema goes in the `/generate` prompt:
+`whole` (default) sends the full schema, which is small (~3K tokens) and safest
+for accuracy; `keyword` sends only the tables a question seems to need (scored by
+word overlap, plus their foreign-key neighbours so joins still work), which is
+cheaper but can miss a table. The seam lives in `app/retrieval/`, ready for a
+larger schema where the whole thing no longer fits comfortably.
+
 ## Hardening
 
 - **Caching:** identical `/generate` questions (whitespace/case-normalized) and
