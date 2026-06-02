@@ -7,9 +7,11 @@ enough to keep a session's lessons stable and fast. A persistent (on-disk) cache
 could be added later if stability across restarts is wanted.
 """
 
+from app.cache import LRUCache
 from app.story.models import MultiChapterStory, Story
 
-_CACHE: dict[str, Story | MultiChapterStory] = {}
+# Bounded so a busy server cannot accumulate stories without limit.
+_CACHE: LRUCache[Story | MultiChapterStory] = LRUCache(128)
 
 
 def make_key(
@@ -31,7 +33,7 @@ def get(key: str) -> Story | MultiChapterStory | None:
 
 
 def put(key: str, story: Story | MultiChapterStory) -> None:
-    _CACHE[key] = story
+    _CACHE.put(key, story)
 
 
 def clear() -> None:
