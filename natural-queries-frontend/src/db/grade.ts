@@ -13,9 +13,11 @@ const stripTrailing = (sql: string) => sql.trim().replace(/;\s*$/, '');
 
 const errorMessage = (error: unknown) => (error instanceof Error ? error.message : 'Unknown error');
 
-// Column count via a zero-row wrap, cheap and avoids fetching data.
+// Column count via a zero-row wrap, cheap and avoids fetching data. The wrapped
+// SQL goes on its own line so a trailing line comment (-- ...) cannot swallow the
+// closing paren that follows it.
 async function columnCount(sql: string): Promise<number> {
-  const result = await runQuery(`SELECT * FROM (${sql}) AS _q LIMIT 0`);
+  const result = await runQuery(`SELECT * FROM (\n${sql}\n) AS _q LIMIT 0`);
   return result.columns.length;
 }
 
@@ -47,9 +49,14 @@ export async function gradeQuery(studentSQL: string, solutionSQL: string): Promi
   }
 
   // EXCEPT ALL compares rows as a multiset and ignores ordering, so a different
-  // ORDER BY still grades as correct as long as the rows match.
+  // ORDER BY still grades as correct as long as the rows match. Each embedded
+  // query sits on its own line so a trailing line comment cannot break the CTE.
   const compare = `
-    WITH _student AS (${student}), _solution AS (${solution})
+    WITH _student AS (
+${student}
+    ), _solution AS (
+${solution}
+    )
     SELECT
       (SELECT count(*) FROM (SELECT * FROM _student EXCEPT ALL SELECT * FROM _solution)) AS only_student,
       (SELECT count(*) FROM (SELECT * FROM _solution EXCEPT ALL SELECT * FROM _student)) AS only_solution,

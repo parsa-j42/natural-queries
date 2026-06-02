@@ -69,6 +69,20 @@ describe('gradeQuery', () => {
     expect(result.feedback).toMatch(/right number of rows/i);
   });
 
+  it('puts embedded SQL on its own line so a trailing comment is safe', async () => {
+    runQueryMock
+      .mockResolvedValueOnce(cols(1))
+      .mockResolvedValueOnce(cols(1))
+      .mockResolvedValueOnce(compareRow(0, 0, 3, 3));
+
+    const student = 'SELECT Well_ID FROM Wells LIMIT 3 -- my answer';
+    const result = await gradeQuery(student, 'SELECT Well_ID FROM Wells LIMIT 3');
+
+    expect(result.correct).toBe(true);
+    // The closing paren of the wrap sits on a new line, not after the comment.
+    expect(runQueryMock.mock.calls[0][0]).toContain(`${student}\n)`);
+  });
+
   it('flags an empty result set', async () => {
     runQueryMock
       .mockResolvedValueOnce(cols(1))
