@@ -40,6 +40,11 @@ describe('client', () => {
     await expect(generateQuery({ question: '' })).rejects.toThrow('question must not be empty');
   });
 
+  it('gives a friendly message when the server is unreachable', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+    await expect(fetchProviders()).rejects.toThrow(/could not reach the server/i);
+  });
+
   it('falls back to status text when there is no JSON body', async () => {
     mockFetch({
       ok: false,

@@ -52,23 +52,31 @@ async function readError(response: Response): Promise<string> {
   return `${response.status} ${response.statusText}`;
 }
 
-export async function getJSON<T>(path: string): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`);
+async function request(path: string, init?: RequestInit): Promise<Response> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_URL}${path}`, init);
+  } catch {
+    // fetch only rejects on a network-level failure (server down, DNS, CORS).
+    throw new Error('Could not reach the server. Is the backend running?');
+  }
   if (!response.ok) {
     throw new Error(await readError(response));
   }
+  return response;
+}
+
+export async function getJSON<T>(path: string): Promise<T> {
+  const response = await request(path);
   return response.json();
 }
 
 export async function postJSON<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await request(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!response.ok) {
-    throw new Error(await readError(response));
-  }
   return response.json();
 }
 
