@@ -18,6 +18,8 @@ from app.providers import AllProvidersFailedError, ModelInfo, list_models
 from app.providers.base import close_client
 from app.ratelimit import RateLimiter
 from app.story import (
+    ALLOWED_ELEMENTS,
+    ALLOWED_SKILLS,
     Difficulty,
     MultiChapterStory,
     Story,
@@ -102,6 +104,11 @@ async def generate(request: GenerateRequest) -> GenerationOutput:
     question = request.question.strip()
     if not question:
         raise HTTPException(status_code=422, detail="question must not be empty")
+    if len(question) > settings.max_question_chars:
+        raise HTTPException(
+            status_code=422,
+            detail=f"question is too long (max {settings.max_question_chars} characters)",
+        )
 
     try:
         return await generate_sql(
@@ -136,6 +143,11 @@ async def story(request: StoryRequest) -> Story | MultiChapterStory:
     """
     if not request.elements or not request.skills:
         raise HTTPException(status_code=422, detail="select at least one element and one skill")
+    unknown = (set(request.elements) - ALLOWED_ELEMENTS) | (set(request.skills) - ALLOWED_SKILLS)
+    if unknown:
+        raise HTTPException(
+            status_code=422, detail=f"unknown elements or skills: {', '.join(sorted(unknown))}"
+        )
 
     try:
         return await generate_story(

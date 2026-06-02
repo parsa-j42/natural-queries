@@ -42,6 +42,11 @@ SKILL_GUIDE: dict[str, str] = {
     "temporal_analysis": "working with the TIMESTAMP date columns (EXTRACT, date ranges)",
 }
 
+# The selectable values, derived from the guides so they cannot drift apart. The
+# /story endpoint validates requests against these.
+ALLOWED_ELEMENTS: frozenset[str] = frozenset(ELEMENT_GUIDE)
+ALLOWED_SKILLS: frozenset[str] = frozenset(SKILL_GUIDE)
+
 # Beginner gets fewer, simpler tasks; advanced gets more.
 _STEP_GUIDANCE: dict[Difficulty, str] = {
     "beginner": "Use 2 steps. Keep queries short, one or two joins at most.",

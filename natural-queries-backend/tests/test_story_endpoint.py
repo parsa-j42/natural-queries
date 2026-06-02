@@ -63,6 +63,15 @@ def test_missing_selections_is_422():
     assert resp.status_code == 422
 
 
+def test_unknown_element_or_skill_is_422():
+    resp = client.post(
+        "/story",
+        json={"mode": "single", "elements": ["made_up"], "skills": ["basic_select"]},
+    )
+    assert resp.status_code == 422
+    assert "made_up" in resp.json()["detail"]
+
+
 def test_generation_failure_is_422(monkeypatch):
     async def fake_generate(
         mode, elements, skills, difficulty, *, model=None, api_key=None, **kwargs

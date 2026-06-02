@@ -57,6 +57,12 @@ def test_empty_question_is_422():
     assert resp.status_code == 422
 
 
+def test_overly_long_question_is_422():
+    resp = client.post("/generate", json={"question": "a" * 5000})
+    assert resp.status_code == 422
+    assert "too long" in resp.json()["detail"]
+
+
 def test_generation_failure_is_422(monkeypatch):
     async def fake_generate(question, *, model=None, api_key=None, **kwargs):
         raise GenerationFailedError("unknown column: Foo")

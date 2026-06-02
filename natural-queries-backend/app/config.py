@@ -45,6 +45,9 @@ class Settings(BaseSettings):
     # Cap on output tokens per generation, to bound cost and latency.
     max_output_tokens: int = 2048
 
+    # Reject questions longer than this many characters (bounds prompt size/cost).
+    max_question_chars: int = 1000
+
     # Cache identical requests (same question/selection and model) so repeats are
     # instant and free. In-memory, per process.
     cache_enabled: bool = True
