@@ -28,13 +28,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: yarn
-          cache-dependency-path: natural-queries-frontend/yarn.lock
+
+      # Enable Corepack before any yarn call so it uses the pinned Yarn 4, not
+      # the runner's global Yarn 1 (which rejects the packageManager field).
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Install
-        run: |
-          corepack enable
-          yarn install --immutable
+        run: yarn install --immutable
 
       - name: Typecheck
         run: yarn typecheck

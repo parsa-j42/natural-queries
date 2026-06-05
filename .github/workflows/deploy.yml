@@ -15,8 +15,29 @@ defaults:
     working-directory: natural-queries-frontend
 
 jobs:
+  # Gate the deploy on the test suite: build only runs if this passes.
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Enable Corepack
+        run: corepack enable
+      - name: Install
+        run: yarn install --immutable
+      - name: Typecheck
+        run: yarn typecheck
+      - name: Lint
+        run: yarn lint
+      - name: Unit tests
+        run: yarn test
+
   build:
     name: Build
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -27,8 +48,13 @@ jobs:
         with:
           node-version: 24
 
+      # Enable Corepack so yarn resolves to the pinned Yarn 4, not the runner's
+      # global Yarn 1 (which rejects the packageManager field).
+      - name: Enable Corepack
+        run: corepack enable
+
       - name: Install dependencies
-        run: npm install
+        run: yarn install --immutable
 
       - name: Build project
         env:
@@ -36,7 +62,7 @@ jobs:
           # VITE_API_URL (Settings -> Secrets and variables -> Actions -> Variables)
           # to the Render URL. If unset, the app falls back to localhost.
           VITE_API_URL: ${{ vars.VITE_API_URL }}
-        run: npm run build
+        run: yarn build
 
       # Pull the Parquet data (gitignored, served as static assets) from a GitHub
       # Release into the build output. Create it once with:
